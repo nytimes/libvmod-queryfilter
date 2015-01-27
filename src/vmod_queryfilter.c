@@ -135,6 +135,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     unsigned ws_remain;
     struct ws* workspace = sp->wrk->ws;
     query_param_t* head = NULL;
+    query_param_t* last = NULL;
     query_param_t* current;
     const char* filter_name;
     int params_seen = 0;
@@ -152,8 +153,8 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     };
 
     /* Terminate the existing URI at the beginning of the query string: */
+    new_uri_end = query_str;
     *(query_str++) = '\0';
-    new_uri_end = new_uri + strlen(new_uri) + 1;
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
      * all of it in the end ;) */
@@ -194,8 +195,14 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
+
+                /* Next time through, we skip this parameter: */
+                if(last) {
+                    last->next = current->next;
+                };
                 break;
             };
+            last = current;
         };
     };
 
