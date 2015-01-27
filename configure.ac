@@ -1,6 +1,13 @@
+## Run autoconf on this file to produce configure.in
+##=============================================================================
+##
+## libvmod-queryfilter/configure.ac: autoconf configuration file
+##
+##=============================================================================
+
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (c) 2015 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [trunk])
+AC_INIT([libvmod-queryfilter], [0.0.0])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
 AC_CONFIG_HEADERS(config.h)
@@ -37,7 +44,10 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
 
 # Check for python
-AC_CHECK_PROGS(PYTHON, [python3 python3.1 python3.2 python2.7 python2.6 python2.5 python2 python], [AC_MSG_ERROR([Python is needed to build this vmod, please install python.])])
+AC_CHECK_PROGS(PYTHON,
+	[python3 python3.1 python3.2 python2.7 python2.6 python2.5 python2 python],
+	[AC_MSG_ERROR([Python is needed to build this vmod, please install python.])
+	])
 
 # Varnish source tree
 AC_ARG_VAR([VARNISHSRC], [path to Varnish source tree (mandatory)])
@@ -64,6 +74,14 @@ if test "x$VMODDIR" = x; then
 		AC_MSG_FAILURE([Can't determine vmod installation directory through pkgconfig])
 	fi
 fi
+
+# Metadata:
+AC_SUBST([PACKAGE_URL],["https://github.com/andrew-canaday/libvmod-queryfilter"])
+AC_SUBST([PACKAGE_LICENSE],["Apache"])
+AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
+AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2015 The New York Times Company"])
+AC_SUBST([PACKAGE_DESCRIPTION],["Simple Varnish query filter/sort VMOD"])
+AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
 
 AC_CONFIG_FILES([
 	Makefile
