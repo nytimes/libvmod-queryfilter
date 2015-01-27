@@ -135,6 +135,8 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     unsigned ws_remain;
     struct ws* workspace = sp->wrk->ws;
     query_param_t* head = NULL;
+    query_param_t* last = NULL;
+    query_param_t* current;
     const char* filter_name;
     int params_seen = 0;
 
@@ -187,8 +189,6 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     for(filter_name = strtok_r(params, ",", &saveptr); filter_name;
         filter_name = strtok_r(NULL, ",", &saveptr))
     {
-        query_param_t* last = NULL;
-        query_param_t* current;
         for(current = head; current != NULL; current=current->next)
         {
             if(current->value && strcmp(filter_name,current->name) == 0) {

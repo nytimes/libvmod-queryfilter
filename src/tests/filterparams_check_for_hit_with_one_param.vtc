@@ -1,0 +1,42 @@
+varnishtest "Test queryfilter vmod for proper filtering of matching strings with only a single parameter"
+
+server s1 {
+       rxreq
+       txresp
+} -start
+
+varnish v1 -vcl+backend {
+	import std;
+	import queryfilter from "${vmod_topbuild}/src/.libs/libvmod_queryfilter.so";
+
+	sub vcl_hash {
+		std.syslog(180, "queryfilter before: " + req.url);
+		set req.url = queryfilter.filterparams(req.url, "a,id");
+		std.syslog(180, "queryfilter after: " + req.url);
+	}
+} -start
+
+client c1 {
+	txreq -url "/some_path?a=1&b=2&c=3&d=4"
+	rxresp
+	expect resp.status == 200
+
+	txreq -url "/some_path?&b=2&c=3&d=4&a=1"
+	rxresp
+	expect resp.status == 200
+
+	txreq -url "/some_path?a=1"
+	rxresp
+	expect resp.status == 200
+}
+
+varnish v1 -expect n_object == 0
+varnish v1 -expect cache_miss == 0
+varnish v1 -expect cache_hit == 0
+
+client c1 -run
+delay .1
+
+varnish v1 -expect n_object == 1
+varnish v1 -expect cache_miss == 1
+varnish v1 -expect cache_hit == 2
