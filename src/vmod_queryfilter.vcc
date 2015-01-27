@@ -1,0 +1,2 @@
+Module queryfilter 
+Function STRING filterparams(STRING, STRING)
