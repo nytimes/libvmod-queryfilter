@@ -158,7 +158,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
      * all of it in the end ;) */
-	ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
+    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
     ws_free = workspace->f;
 
     /* Copy the query string to the head of the workspace: */
@@ -207,11 +207,11 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     };
 
 release_okay:
-	WS_Release(workspace, 0);
-	return new_uri;
+    WS_Release(workspace, 0);
+    return new_uri;
 
 release_bail:
-	WS_Release(workspace, 0);
+    WS_Release(workspace, 0);
     return NULL;
 };
 
