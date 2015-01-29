@@ -1,3 +1,10 @@
+v0.0.2 2015/01/29
+-----------------
+
+### Bugfixes
+Removed linked list node removal to patch bug where match search could run off the end of the list.
+
+
 v0.0.1 2015/01/27
 -----------------
 

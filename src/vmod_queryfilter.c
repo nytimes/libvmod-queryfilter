@@ -135,7 +135,6 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     unsigned ws_remain;
     struct ws* workspace = sp->wrk->ws;
     query_param_t* head = NULL;
-    query_param_t* last = NULL;
     query_param_t* current;
     const char* filter_name;
     int params_seen = 0;
@@ -158,7 +157,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
      * all of it in the end ;) */
-	ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
+    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
     ws_free = workspace->f;
 
     /* Copy the query string to the head of the workspace: */
@@ -196,22 +195,17 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
 
-                /* Next time through, we skip this parameter: */
-                if(last) {
-                    last->next = current->next;
-                };
                 break;
             };
-            last = current;
         };
     };
 
 release_okay:
-	WS_Release(workspace, 0);
-	return new_uri;
+    WS_Release(workspace, 0);
+    return new_uri;
 
 release_bail:
-	WS_Release(workspace, 0);
+    WS_Release(workspace, 0);
     return NULL;
 };
 
