@@ -135,7 +135,6 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     unsigned ws_remain;
     struct ws* workspace = sp->wrk->ws;
     query_param_t* head = NULL;
-    query_param_t* last = NULL;
     query_param_t* current;
     const char* filter_name;
     int params_seen = 0;
@@ -196,13 +195,8 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
 
-                /* Next time through, we skip this parameter: */
-                if(last) {
-                    last->next = current->next;
-                };
                 break;
             };
-            last = current;
         };
     };
 
