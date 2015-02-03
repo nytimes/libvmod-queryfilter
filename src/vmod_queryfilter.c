@@ -72,6 +72,9 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         param->value = strchr(param_str,'=');
         if( param->value ) {
             *(param->value++) = '\0';
+            if( *(param->value) == '\0' ) {
+                param->value = NULL;
+            };
         }
         else {
             param->value = NULL;
@@ -140,26 +143,28 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     const char* filter_name;
     int params_seen = 0;
 
+    /* Reserve the *rest* of the workspace - it's okay, we're gonna release
+     * all of it in the end ;) */
+    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
+    ws_free = workspace->f;
+
     /* Duplicate the URI, bailing on OOM: */
-    new_uri = WS_Dup(workspace, uri);
+    new_uri = strtmp_append(&ws_free, &ws_remain, uri);
     if( new_uri == NULL ) {
-        return NULL;
+        goto release_bail;
     };
+    ws_free += 100;
+    ws_remain -= 100;
 
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
     if( query_str == NULL ) {
-        return uri;
+        goto release_bail;
     };
 
     /* Terminate the existing URI at the beginning of the query string: */
     new_uri_end = query_str;
     *(query_str++) = '\0';
-
-    /* Reserve the *rest* of the workspace - it's okay, we're gonna release
-     * all of it in the end ;) */
-    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
-    ws_free = workspace->f;
 
     /* Copy the query string to the head of the workspace: */
     query_str = strtmp_append(&ws_free, &ws_remain, query_str);
@@ -208,7 +213,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     };
 
 release_okay:
-    WS_Release(workspace, 0);
+    WS_Release(workspace, (++new_uri_end-new_uri));
     return new_uri;
 
 release_bail:
