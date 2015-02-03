@@ -218,7 +218,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     };
 
 release_okay:
-    WS_Release(workspace, (++new_uri_end-new_uri));
+    WS_Release(workspace, (new_uri_end-new_uri));
     return new_uri;
 
 release_bail:
