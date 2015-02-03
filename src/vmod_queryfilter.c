@@ -26,6 +26,8 @@
 
 #include "vcc_if.h"
 
+#define VMOD_QUERYFILTER_EXTRA_BUFF_SIZE 100
+
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
  */
@@ -153,8 +155,11 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     if( new_uri == NULL ) {
         goto release_bail;
     };
-    ws_free += 100;
-    ws_remain -= 100;
+
+    /* Push out the edge of the buffer to give us room to grow a little bit.
+     * TODO: this is ugly. */
+    ws_free += VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
+    ws_remain -= VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
 
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
