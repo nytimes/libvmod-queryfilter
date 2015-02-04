@@ -26,6 +26,8 @@
 
 #include "vcc_if.h"
 
+#define VMOD_QUERYFILTER_EXTRA_BUFF_SIZE 100
+
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
  */
@@ -72,6 +74,9 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         param->value = strchr(param_str,'=');
         if( param->value ) {
             *(param->value++) = '\0';
+            if( *(param->value) == '\0' ) {
+                param->value = NULL;
+            };
         }
         else {
             param->value = NULL;
@@ -139,26 +144,31 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     const char* filter_name;
     int params_seen = 0;
 
+    /* Reserve the *rest* of the workspace - it's okay, we're gonna release
+     * all of it in the end ;) */
+    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
+    ws_free = workspace->f;
+
     /* Duplicate the URI, bailing on OOM: */
-    new_uri = WS_Dup(workspace, uri);
+    new_uri = strtmp_append(&ws_free, &ws_remain, uri);
     if( new_uri == NULL ) {
-        return NULL;
+        goto release_bail;
     };
+
+    /* Push out the edge of the buffer to give us room to grow a little bit.
+     * TODO: this is ugly. */
+    ws_free += VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
+    ws_remain -= VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
 
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
     if( query_str == NULL ) {
-        return uri;
+        goto release_bail;
     };
 
     /* Terminate the existing URI at the beginning of the query string: */
     new_uri_end = query_str;
     *(query_str++) = '\0';
-
-    /* Reserve the *rest* of the workspace - it's okay, we're gonna release
-     * all of it in the end ;) */
-    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
-    ws_free = workspace->f;
 
     /* Copy the query string to the head of the workspace: */
     query_str = strtmp_append(&ws_free, &ws_remain, query_str);
@@ -194,14 +204,13 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
-
                 break;
             };
         };
     };
 
 release_okay:
-    WS_Release(workspace, 0);
+    WS_Release(workspace, (new_uri_end-new_uri));
     return new_uri;
 
 release_bail:

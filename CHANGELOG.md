@@ -1,3 +1,10 @@
+v0.0.3 2015/01/29
+-----------------
+
+### Bugfixes
+Check for empty query parameter values.
+
+
 v0.0.2 2015/01/29
 -----------------
 
