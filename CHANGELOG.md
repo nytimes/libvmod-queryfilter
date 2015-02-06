@@ -1,4 +1,9 @@
-v0.0.3 2015/01/29
+v0.0.4 2015/02/06
+-----------------
+
+Remove a kludge and save a few bytes of WS on success.
+
+v0.0.3 2015/02/03
 -----------------
 
 ### Bugfixes
