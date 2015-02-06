@@ -26,8 +26,6 @@
 
 #include "vcc_if.h"
 
-#define VMOD_QUERYFILTER_EXTRA_BUFF_SIZE 100
-
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
  */
@@ -113,15 +111,14 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
 /** Entrypoint for filterparams.
  *
  * Notes:
- * 1. We WS_Dup the URI as working space for the output URI, assuming that the
+ * 1. We copy the URI as working space for the output URI, assuming that the
  *    filtered URI will always be less than or equal to the input URI size.
  * 2. Tokenize the querystring *once* and store it as a linked list
  * 3. Tokenize and iterate over the input parameters, copying matching query
  *    parameters to the end of our allocated space; the terms end up sorted
  *    as a byproduct.
- * 4. The only "allocation" that really happens is the WS_Dup, in both success
- *    and failure, the space allocated by WS_Reserve - and subsequently used to
- *    store temporary copies and the linked list - is released.
+ * 4. On success, release all but the space occupied by new_uri; on failure
+ *    release all workspace memory that was allocated.
  *
  * @param sp Varnish Session Pointer
  * @param uri The input URI
@@ -154,11 +151,6 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     if( new_uri == NULL ) {
         goto release_bail;
     };
-
-    /* Push out the edge of the buffer to give us room to grow a little bit.
-     * TODO: this is ugly. */
-    ws_free += VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
-    ws_remain -= VMOD_QUERYFILTER_EXTRA_BUFF_SIZE;
 
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
