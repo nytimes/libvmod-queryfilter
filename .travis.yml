@@ -25,6 +25,3 @@ branches:
 script:
 - make check
 
-after_failure:
-- "cat config.log"
-
