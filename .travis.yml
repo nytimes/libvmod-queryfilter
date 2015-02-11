@@ -10,11 +10,11 @@ before_install:
 before_script:
 - apt-get source -q varnish
 - cd varnish*
-- ./configure
+- ./configure --prefix=/usr/local
 - make
 - cd ..
 - ./autogen.sh
-- ./configure VARNISHSRC=varnish* VMODDIR=`pwd`
+- ./configure --prefix=/usr/local VARNISHSRC=varnish* VMODDIR=/usr/local/lib/varnish/vmods
 - make
 
 branches:
