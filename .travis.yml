@@ -11,7 +11,7 @@ before_script:
 - apt-get source -q varnish
 - cd varnish*
 - ./configure --prefix=/usr/local
-- make
+- make install
 - cd ..
 - ./autogen.sh
 - ./configure --prefix=/usr/local VARNISHSRC=varnish* VMODDIR=/usr/local/lib/varnish/vmods
