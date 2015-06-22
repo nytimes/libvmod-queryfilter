@@ -28,7 +28,7 @@ vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter.vcc
 VMOD_TESTS = @abs_srcdir@/tests/*.vtc
 .PHONY: $(VMOD_TESTS)
 
-tests/*.vtc:
+@abs_srcdir@/tests/*.vtc:
 	@VARNISHTEST@ \
         -Dvarnish_source=@VARNISHSRC@ \
         -Dvarnishd=@VARNISHSRC@/bin/varnishd/varnishd \
