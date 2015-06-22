@@ -42,6 +42,8 @@ typedef struct query_param {
  * @param ws_free pointer to char* at the head of the reserved workspace
  * @param ws_remain the amount of reserved workspace remaining, in bytes
  * @return on success the pointer to the head of the list; NULL on failure
+ *
+ * @TODO alignment for query_param_t structs!
  */
 static query_param_t*
 tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
