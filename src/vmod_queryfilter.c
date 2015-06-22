@@ -54,6 +54,14 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
     unsigned remain_temp = *remain; /* Temporary allocation counter */
     query_param_t* head = NULL;
 
+    /* Move the free pointer up so that query_param_t objects allocated on
+     * WS storage are properly aligned: */
+    size_t align_remain = (size_t)ws_free_temp % sizeof(char*);
+    if( align_remain ) {
+        ws_free_temp += (sizeof(char*) - align_remain);
+        remain_temp -= (sizeof(char*) - align_remain);
+    };
+
     /* Tokenize the query parameters into a linked list: */
     for(param_str = strtok_r(query_str, "&", &save_ptr); param_str;
         param_str = strtok_r(NULL, "&", &save_ptr))
