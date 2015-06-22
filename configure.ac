@@ -93,7 +93,7 @@ AC_ARG_VAR([VMODDIR],
 # If not explicitly set, attempt to determine vmoddir via pkg-config
 if test "x$VMODDIR" = "x"; then
 	VMODDIR=`PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:$VARNISHSRC" \
-        pkg-config --variable=vmoddir varnishapi`
+        $PKG_CONFIG --variable=vmoddir varnishapi`
 	if test "x$VMODDIR" = "x"; then
 		AC_MSG_FAILURE([Please set VMODDIR to the vmod installation path])
 	fi
