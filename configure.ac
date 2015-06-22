@@ -62,20 +62,19 @@ if test "x$VARNISHSRC" = "x"; then
 	AC_MSG_ERROR([No Varnish source tree specified])
 fi
 VARNISHSRC=`cd $VARNISHSRC && pwd`
-AC_CHECK_FILE([$VARNISHSRC/include/varnishapi.h],
-	[],
+AC_CHECK_FILE([$VARNISHSRC/include/varnishapi.h],[],
 	[AC_MSG_FAILURE(["$VARNISHSRC" is not a Varnish source directory])]
 )
 
 # Check that varnishtest is built in the varnish source directory
-AC_CHECK_FILE([$VARNISHSRC/bin/varnishtest/varnishtest],
-	[],
+AC_CHECK_FILE([$VARNISHSRC/bin/varnishtest/varnishtest],[],
 	[AC_MSG_FAILURE([No varnish build found in "$VARNISHSRC". \
         Please build your varnish source directory])]
 )
 
 # Determine the vmod installation dir
-AC_ARG_VAR([VMODDIR], [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
+AC_ARG_VAR([VMODDIR],
+    [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
 if test "x$VMODDIR" = "x"; then
 	VMODDIR=`pkg-config --variable=vmoddir varnishapi`
 	if test "x$VMODDIR" = "x"; then
