@@ -21,10 +21,10 @@ AC_GNU_SOURCE
 AM_INIT_AUTOMAKE([foreign])
 
 #-----------------------------
-#       Required Tools:
+#         Build Tools:
 #-----------------------------
 AC_PROG_CC
-AC_PROG_CC_STDC
+AC_PROG_CC_C99
 if test "x$ac_cv_prog_cc_c99" = "xno"; then
 	AC_MSG_ERROR([Could not find a C99 compatible compiler])
 fi
@@ -56,27 +56,44 @@ AC_CHECK_PROGS(PYTHON,
 AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
 
+#--- Varnish Source Tree: ---
 # Locate the varnish source tree
 AC_ARG_VAR([VARNISHSRC], [path to Varnish source tree (mandatory)])
-if test "x$VARNISHSRC" = "x"; then
-	AC_MSG_ERROR([No Varnish source tree specified])
+if test "x$VARNISHSRC" = "x" -o ! -d "$VARNISHSRC"; then
+    AC_MSG_ERROR([VARNISHSRC must be set to the varnish source tree])
 fi
 VARNISHSRC=`cd $VARNISHSRC && pwd`
-AC_CHECK_FILE([$VARNISHSRC/include/varnishapi.h],[],
-	[AC_MSG_FAILURE(["$VARNISHSRC" is not a Varnish source directory])]
-)
 
-# Check that varnishtest is built in the varnish source directory
-AC_CHECK_FILE([$VARNISHSRC/bin/varnishtest/varnishtest],[],
-	[AC_MSG_FAILURE([No varnish build found in "$VARNISHSRC". \
-        Please build your varnish source directory])]
-)
+#--- Validate Varnish 3.x build: ---
+# Ensure varnishapi.h is where we expect it:
+AC_CHECK_FILES([$VARNISHSRC/include/varnishapi.h],[],[varnish_src="no"])
 
-# Determine the vmod installation dir
+# And that we have vmod.py:
+AC_CHECK_FILE([$VARNISHSRC/lib/libvmod_std/vmod.py],
+    AC_SUBST([VMOD_PY],[$VARNISHSRC/lib/libvmod_std/vmod.py]),
+    [varnish_src="no"])
+
+# Bail if any required varnish source files were not found:
+if test "x$varnishsrc" = "xno"; then
+    AC_MSG_FAILURE(["$VARNISHSRC" is not a Varnish source directory])
+fi
+
+#--- Varnishtest: ---
+# Check that varnishtest is built in the varnish source directory:
+AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$VARNISHSRC/bin/varnishtest])
+if test "x$VARNISHTEST" == "x"; then
+    AC_MSG_ERROR([$VARNISHSRC/bin/varnishtest not found. \
+Please build your varnish source directory.])
+fi
+
+#--- VMOD Installation directory:
 AC_ARG_VAR([VMODDIR],
     [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
+
+# If not explicitly set, attempt to determine vmoddir via pkg-config
 if test "x$VMODDIR" = "x"; then
-	VMODDIR=`pkg-config --variable=vmoddir varnishapi`
+	VMODDIR=`PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:$VARNISHSRC" \
+        pkg-config --variable=vmoddir varnishapi`
 	if test "x$VMODDIR" = "x"; then
 		AC_MSG_FAILURE([Please set VMODDIR to the vmod installation path])
 	fi
