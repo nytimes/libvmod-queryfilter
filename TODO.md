@@ -4,6 +4,7 @@ libvmod-queryfilter TODO:
  - Handling (run/compile-time configurable?) for:
      - Empty params ("a=" or "a")
      - Missing params
+ - Query ["array" parameters](https://github.com/andrew-canaday/libvmod-queryfilter/issues/2)
  - Varnish v4.x support
  - Travis yaml configuration
  - Clean up configure.ac
