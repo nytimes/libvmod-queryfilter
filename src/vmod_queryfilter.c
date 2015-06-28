@@ -109,7 +109,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
     (*ws_free) = ws_free_temp;
     (*remain) = remain_temp;
     return head;
-};
+}
 
 /* Hacky workspace string copy. We pray for inline. ;)
  *
@@ -129,7 +129,7 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
         *remain -= buf_size;
     };
     return dst;
-};
+}
 
 /** Entrypoint for filterparams.
  *
@@ -238,7 +238,7 @@ release_okay:
 release_bail:
     WS_Release(workspace, 0);
     return NULL;
-};
+}
 
 /* EOF */
 
