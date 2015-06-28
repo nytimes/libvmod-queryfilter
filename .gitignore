@@ -30,6 +30,7 @@ autom4te.cache
 build
 compile
 config.guess
+vmod_queryfilter_config.h.in
 config.h.in
 config.h.in~
 config.sub

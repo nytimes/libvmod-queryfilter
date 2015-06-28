@@ -16,6 +16,8 @@
  * limitations under the License.
  * 
  *===========================================================================*/
+
+#include "vmod_queryfilter_config.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -23,8 +25,11 @@
 
 #include "vrt.h"
 #include "bin/varnishd/cache.h"
-
 #include "vcc_if.h"
+
+/* Convenience macro used to test parameters for match: */
+#define PARAM_IS_MATCH(param, filter_name) \
+    current->value && !strcmp(filter_name,current->name)
 
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
@@ -53,6 +58,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
     char* ws_free_temp = *ws_free; /* Temporary copy of workspace head */
     unsigned remain_temp = *remain; /* Temporary allocation counter */
     query_param_t* head = NULL;
+    query_param_t* tail = NULL;
 
     /* Move the free pointer up so that query_param_t objects allocated on
      * WS storage are properly aligned: */
@@ -80,6 +86,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
 
         param->name = param_str;
         param->value = strchr(param_str,'=');
+        param->next = NULL;
         if( param->value ) {
             *(param->value++) = '\0';
             if( *(param->value) == '\0' ) {
@@ -89,8 +96,14 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         else {
             param->value = NULL;
         };
-        param->next = head;
-        head = param;
+
+        if( tail ) {
+            tail->next = param;
+            tail = param;
+        }
+        else {
+            head = tail = param;
+        };
     };
 
     (*ws_free) = ws_free_temp;
@@ -202,11 +215,18 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     {
         for(current = head; current != NULL; current=current->next)
         {
-            if(current->value && strcmp(filter_name,current->name) == 0) {
+            if(PARAM_IS_MATCH(current, filter_name)) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
+/* If arrays are not enabled (default), we just break after the first match
+ * to avoid unnecessary checks. However, for arrays it is necessary to keep
+ * iterating through the list to find additional matches. A side effect of this
+ * is that all elements of a given array will be rewritten in sequence next to
+ * each other in the output array: */
+#if !VMOD_QUERYFILTER_ARRAYS_ENABLED
                 break;
+#endif /* VMOD_QUERYFILTER_ARRAYS_ENABLED */
             };
         };
     };

@@ -6,7 +6,8 @@
 
 AM_CPPFLAGS = \
     -I@VARNISHSRC@/include \
-    -I@VARNISHSRC@
+    -I@VARNISHSRC@ \
+    -I@top_builddir@/include
 
 vmoddir = @VMODDIR@
 vmod_LTLIBRARIES = libvmod_queryfilter.la

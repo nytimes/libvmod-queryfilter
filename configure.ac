@@ -14,7 +14,6 @@ AC_INIT([libvmod-queryfilter], [0.0.4])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
-AC_CONFIG_HEADERS(config.h)
 AC_CANONICAL_SYSTEM
 AC_LANG(C)
 AC_GNU_SOURCE
@@ -99,6 +98,27 @@ if test "x$VMODDIR" = "x"; then
 	fi
 fi
 
+#--------------------------
+#    Optional Features:    
+#--------------------------
+# Check for query-arrays:
+AC_ARG_ENABLE([query-arrays],
+    AS_HELP_STRING(
+        [--enable-query-arrays],
+        [Turn verbose assertions on for tests]))
+
+# If set, extend CFLAGS with verbose assertions
+if test "x$enable_query_arrays" = "xyes"; then
+    vmod_queryfilter_arrays_enabled=1
+else
+    vmod_queryfilter_arrays_enabled=0
+fi
+
+AC_DEFINE_UNQUOTED(
+    [VMOD_QUERYFILTER_ARRAYS_ENABLED],
+    [$vmod_queryfilter_arrays_enabled],
+    [If true, permit php-style query array parameters])
+
 #-----------------------------
 #         Metadata:
 #-----------------------------
@@ -114,6 +134,7 @@ AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
 #-----------------------------
 #          Output:
 #-----------------------------
+AC_CONFIG_HEADERS(vmod_queryfilter_config.h)
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
