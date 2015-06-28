@@ -101,20 +101,20 @@ fi
 #--------------------------
 #    Optional Features:    
 #--------------------------
-# Check for query-array:
-AC_ARG_ENABLE([query-array],
+# Check for query-arrays:
+AC_ARG_ENABLE([query-arrays],
     AS_HELP_STRING(
-        [--enable-query-array],
+        [--enable-query-arrays],
         [Turn verbose assertions on for tests]))
 
 # If set, extend CFLAGS with verbose assertions
-if test "x$enable_query_array" = "xyes"; then
-    vmod_queryfilter_arrays=1
+if test "x$enable_query_arrays" = "xyes"; then
+    vmod_queryfilter_arrays_enabled=1
 else
-    vmod_queryfilter_arrays=0
+    vmod_queryfilter_arrays_enabled=0
 fi
 
-AC_DEFINE(
+AC_DEFINE_UNQUOTED(
     [VMOD_QUERYFILTER_ARRAYS_ENABLED],
     [$vmod_queryfilter_arrays_enabled],
     [If true, permit php-style query array parameters])
