@@ -58,6 +58,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
     char* ws_free_temp = *ws_free; /* Temporary copy of workspace head */
     unsigned remain_temp = *remain; /* Temporary allocation counter */
     query_param_t* head = NULL;
+    query_param_t* tail = NULL;
 
     /* Move the free pointer up so that query_param_t objects allocated on
      * WS storage are properly aligned: */
@@ -85,6 +86,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
 
         param->name = param_str;
         param->value = strchr(param_str,'=');
+        param->next = NULL;
         if( param->value ) {
             *(param->value++) = '\0';
             if( *(param->value) == '\0' ) {
@@ -94,8 +96,14 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         else {
             param->value = NULL;
         };
-        param->next = head;
-        head = param;
+
+        if( tail ) {
+            tail->next = param;
+            tail = param;
+        }
+        else {
+            head = tail = param;
+        };
     };
 
     (*ws_free) = ws_free_temp;
