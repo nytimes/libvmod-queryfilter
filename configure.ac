@@ -20,7 +20,18 @@ AC_GNU_SOURCE
 AM_INIT_AUTOMAKE([foreign])
 
 #-----------------------------
-#         Build Tools:
+#         Metadata:
+#-----------------------------
+AC_SUBST([PACKAGE_URL],
+    ["https://github.com/andrew-canaday/libvmod-queryfilter"])
+AC_SUBST([PACKAGE_LICENSE],["Apache"])
+AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
+AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2015 The New York Times Company"])
+AC_SUBST([PACKAGE_DESCRIPTION],["Simple Varnish query filter/sort VMOD"])
+AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
+
+#-----------------------------
+#         Programs:
 #-----------------------------
 AC_PROG_CC
 AC_PROG_CC_C99
@@ -31,6 +42,14 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 # Check for rst utilities
 AC_CHECK_PROGS(RST2MAN, [rst2man rst2man.py], "no")
@@ -50,15 +69,27 @@ AC_CHECK_PROGS(PYTHON,
 	])
 
 #-----------------------------
-#       Dependencies:
+#           Headers:
 #-----------------------------
+AC_CHECK_HEADERS([stdlib.h string.h])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
 AX_CHECK_VARNISH3_SRC
 
-#--------------------------
-#    Optional Features:    
-#--------------------------
+#-----------------------------
+#           Types:
+#-----------------------------
+AC_C_INLINE
+AC_TYPE_SIZE_T
+
+#-----------------------------
+#       Function Checks:
+#-----------------------------
+AC_CHECK_FUNCS([strchr])
+
+#-----------------------------
+#    Configuration Options:
+#-----------------------------
 # Check for query-arrays:
 AC_ARG_ENABLE([query-arrays],
     AS_HELP_STRING(
@@ -76,18 +107,6 @@ AC_DEFINE_UNQUOTED(
     [VMOD_QUERYFILTER_ARRAYS_ENABLED],
     [$vmod_queryfilter_arrays_enabled],
     [If true, permit php-style query array parameters])
-
-#-----------------------------
-#         Metadata:
-#-----------------------------
-AC_SUBST([PACKAGE_URL],
-    ["https://github.com/andrew-canaday/libvmod-queryfilter"])
-AC_SUBST([PACKAGE_LICENSE],["Apache"])
-AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
-AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2015 The New York Times Company"])
-AC_SUBST([PACKAGE_DESCRIPTION],["Simple Varnish query filter/sort VMOD"])
-AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
-
 
 #-----------------------------
 #          Output:
