@@ -5,14 +5,20 @@
 #
 # SYNOPSIS
 #
-#  AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+#  AX_CHECK_VARNISH3_SRC()
 #
 # DESCRIPTION
 #   This macro finds files, programs, and scripts required to build a vmod for
-#   varnish 3.x. Declares the following precious variables:
+#   varnish 3.x using a path to varnish 3.x source directory (must be built!).
+# 
+#   Declares the following precious variables:
 #    * VARNISHSRC - path to source directory
 #    * VARNISHTEST - path to varnishtest vtc runner
 #    * VMODDIR - path to vmod installation directory
+#
+#  Sets the following output variables (in addition to those listed above):
+#    * VMOD_PY - path to the vmod.py utility script used to generate certain
+#                auxiliary files (typically named vcc_if.c and vcc_if.h)
 #
 #  And performs the following actions:
 #    * Require VARNISHSRC to be set to the path to a Varnish 3 source directory
@@ -21,9 +27,6 @@
 #    * Set the VMOD_PY output variable to the path to the vmod.py utility
 #    * If unset, set the VARNISHTEST output variable to the path to varnishtest
 #    * If unset, Set the VMODDIR output variable to the vmod installation dir
-#
-# If specified, execute ACTION-IF-FOUND on success and ACTION-IF-NOT-FOUND on
-# failure.
 #
 # LICENSE
 #
@@ -44,7 +47,7 @@
 
 # serial 1
 
-# AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+# AX_CHECK_VARNISH3_SRC()
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     #--- Declare our precious variables ---
@@ -108,6 +111,5 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
     ])
 ])
 
-# EOF
-
+## EOF
 
