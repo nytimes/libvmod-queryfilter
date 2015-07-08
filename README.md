@@ -59,14 +59,21 @@ Additional configuration variables and options can be found by invoking
 #### Query Arrays
 By default, libvmod-queryfilter assumes query parameters are individual
 name/value pairs (e.g. `a=1&b=2...`). Optional support for arrays in query
-parameters (see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string))
-can be enabled by passing the `--enable-query-arrays` at configure time.
+parameters (e.g. `a[]=1&a[]=2...` - see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string) or [Issue #2](https://github.com/andrew-canaday/libvmod-queryfilter/issues/2))
+can be enabled by passing the `--enable-query-arrays` at configure time. With
+this option enabled, array parameters will be preserved - in order - in the
+output URI.
+
+**NOTE**: _At present, query arrays are a compile-time option. There are plans
+to make this behavior run-time configurable in the next major-level release._
 
 ### Check Targets
-Libvmod-queryfilter provides a set of simple unittests driven by *varnishtest*.
-They can be executed as part of the build process by invoking `make check`.
+Libvmod-queryfilter provides a set of simple unit tests driven by
+**varnishtest**. They can be executed as part of the build process by
+invoking `make check`.
 
 Notes
 -----
-Currently, there is only support for the Varnish 3.x API.
+There is only support for the Varnish 3 API at the moment, though support for
+the 4 series API is planned.
 
