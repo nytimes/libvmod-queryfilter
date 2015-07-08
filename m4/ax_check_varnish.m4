@@ -9,14 +9,18 @@
 #
 # DESCRIPTION
 #   This macro finds files, programs, and scripts required to build a vmod for
-#   varnish 3.x. Actions taken (TODO: clean up description!):
-#    - Declare VARNISHSRC as a precious variable
-#    - Require VARNISHSRC to be set to the path to a Varnish 3 source directory
-#    - If relative, convert VARNISHSRC to an absolute file path
-#    - Verify that the Varnish source includes varnishapi.h
-#    - Set the VMOD_PY output variable to the path to the vmod.py utility
-#    - Set the VARNISHTEST output variable to the path to varnishtest
-#    - Set the VMODDIR output variable to the installation directory for vmod's
+#   varnish 3.x. Declares the following precious variables:
+#    * VARNISHSRC - path to source directory
+#    * VARNISHTEST - path to varnishtest vtc runner
+#    * VMODDIR - path to vmod installation directory
+#
+#  And performs the following actions:
+#    * Require VARNISHSRC to be set to the path to a Varnish 3 source directory
+#    * If relative, convert VARNISHSRC to an absolute file path
+#    * Verify that the Varnish source includes varnishapi.h (3.x sanity check)
+#    * Set the VMOD_PY output variable to the path to the vmod.py utility
+#    * If unset, set the VARNISHTEST output variable to the path to varnishtest
+#    * If unset, Set the VMODDIR output variable to the vmod installation dir
 #
 # If specified, execute ACTION-IF-FOUND on success and ACTION-IF-NOT-FOUND on
 # failure.
@@ -40,10 +44,17 @@
 
 # serial 1
 
+# AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+# ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
+    #--- Declare our precious variables ---
+    AC_ARG_VAR([VARNISHSRC],[path to Varnish source tree (mandatory)])
+    AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
+    AC_ARG_VAR([VMODDIR],
+        [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
+
     #--- Varnish Source Tree: ---
     # Locate the varnish source tree
-    AC_ARG_VAR([VARNISHSRC], [path to Varnish source tree (mandatory)])
     AS_IF([test "x$VARNISHSRC" = "x" -o ! -d "$VARNISHSRC"],[
         AC_MSG_ERROR([VARNISHSRC must be set to the varnish source tree])
     ])
@@ -53,7 +64,7 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     # Ensure varnishapi.h is where we expect it:
     varnishapi_path=[$VARNISHSRC/include/varnishapi.h]
     AC_CHECK_FILES([$varnishapi_path],[],[
-        AC_MSG_ERROR([Invalid VARNISHSRC: $varnishapi_path not found])
+        AC_MSG_ERROR([Invalid Varnish 3 source: $varnishapi_path not found])
     ])
 
     # And that we have vmod.py:
@@ -61,7 +72,7 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     AC_CHECK_FILE([$vmod_py_path],[
         AC_SUBST([VMOD_PY],[$vmod_py_path])
     ],[
-        AC_MSG_ERROR([Invalid VARNISHSRC: $vmod_py_path not found])
+        AC_MSG_ERROR([Invalid Varnish 3 source: $vmod_py_path not found])
     ])
 
     #--- Varnishtest: ---
@@ -72,16 +83,16 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     ])
 
     #--- VMOD Installation directory:
-    AC_ARG_VAR([VMODDIR],
-        [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
-
     # If not explicitly set, attempt to determine vmoddir via pkg-config
     # TODO: use PKG_CHECK_VAR
     AS_IF([test "x$VMODDIR" = "x"],[
-        VMODDIR=`PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:$VARNISHSRC" \
-            $PKG_CONFIG --variable=vmoddir varnishapi`
-        AS_IF([test "x$VMODDIR" = "x"],[
-            AC_MSG_FAILURE([Please set VMODDIR to the vmod installation path])
+        PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[],[
+            AC_MSG_ERROR([
+Unable to determine VMODDIR. To remedy this, consider setting the VMODDIR
+environment variable or re-running configure with a PKG_CONFIG_PATH pointing
+to your varnish source directory, e.g.:
+${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}"
+])
         ])
     ])
 ])
