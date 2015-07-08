@@ -38,7 +38,7 @@ configure
 depcomp
 install-sh
 ltmain.sh
-m4
+m4/*
 missing
 test-driver
 
@@ -47,3 +47,6 @@ test-driver
 
 # Other local dev files
 vmod_queryfilter.3
+
+# Things not to ignore
+m4/ax_*
