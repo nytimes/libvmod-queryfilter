@@ -5,14 +5,13 @@
 #
 #==============================================================================
 
-AC_DEFUN([QUERYFILTER_VARNISH],
-[
+AC_DEFUN([QUERYFILTER_VARNISH],[
     #--- Varnish Source Tree: ---
     # Locate the varnish source tree
     AC_ARG_VAR([VARNISHSRC], [path to Varnish source tree (mandatory)])
-    if test "x$VARNISHSRC" = "x" -o ! -d "$VARNISHSRC"; then
+    AS_IF([test "x$VARNISHSRC" = "x" -o ! -d "$VARNISHSRC"],[
         AC_MSG_ERROR([VARNISHSRC must be set to the varnish source tree])
-    fi
+    ])
     VARNISHSRC=`cd $VARNISHSRC && pwd`
 
     #--- Validate Varnish 3.x build: ---
@@ -25,30 +24,31 @@ AC_DEFUN([QUERYFILTER_VARNISH],
         [varnish_src="no"])
 
     # Bail if any required varnish source files were not found:
-    if test "x$varnishsrc" = "xno"; then
+    AS_IF([test "x$varnishsrc" = "xno"],[
         AC_MSG_FAILURE(["$VARNISHSRC" is not a Varnish source directory])
-    fi
+    ])
 
     #--- Varnishtest: ---
     # Check that varnishtest is built in the varnish source directory:
     AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$VARNISHSRC/bin/varnishtest])
-    if test "x$VARNISHTEST" == "x"; then
+    AS_IF([test "x$VARNISHTEST" == "x"],[
         AC_MSG_ERROR([$VARNISHSRC/bin/varnishtest not found. \
     Please build your varnish source directory.])
-    fi
+    ])
 
     #--- VMOD Installation directory:
     AC_ARG_VAR([VMODDIR],
         [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
 
     # If not explicitly set, attempt to determine vmoddir via pkg-config
-    if test "x$VMODDIR" = "x"; then
+    # TODO: use PKG_CHECK_VAR
+    AS_IF([test "x$VMODDIR" = "x"],[
         VMODDIR=`PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:$VARNISHSRC" \
             $PKG_CONFIG --variable=vmoddir varnishapi`
-        if test "x$VMODDIR" = "x"; then
+        AS_IF([test "x$VMODDIR" = "x"],[
             AC_MSG_FAILURE([Please set VMODDIR to the vmod installation path])
-        fi
-    fi
+        ])
+    ])
 ])
 
 # EOF
