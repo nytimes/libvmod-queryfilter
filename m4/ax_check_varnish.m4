@@ -86,13 +86,24 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     # If not explicitly set, attempt to determine vmoddir via pkg-config
     # TODO: use PKG_CHECK_VAR
     AS_IF([test "x$VMODDIR" = "x"],[
+        # I'm not sure we should just silently export variables on behalf of
+        # the user. However, existing users already expect this to work,
+        # setting only VARNISHSRC. We try once without and then do it for them:
         PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[],[
-            AC_MSG_ERROR([
-Unable to determine VMODDIR. To remedy this, consider setting the VMODDIR
-environment variable or re-running configure with a PKG_CONFIG_PATH pointing
-to your varnish source directory, e.g.:
-${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}"
+            AC_MSG_WARN([No VMODDIR set and unable to locate via pkg-config.
+Trying now with PKG_CONFIG_PATH=$VARNISHSRC....
+
+To avoid this warning in the future, consider setting the VMODDIR environment
+variable or re-running configure with a PKG_CONFIG_PATH pointing to your
+varnish source directory, e.g.:
+
+${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
+
 ])
+            export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
+            PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[],[
+                AC_MSG_ERROR([Unable to determine VMODDIR])
+            ])
         ])
     ])
 ])
