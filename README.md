@@ -77,3 +77,8 @@ Notes
 There is only support for the Varnish 3 API at the moment, though support for
 the 4 series API is planned.
 
+LICENSE
+-------
+Copyright © 2014,2015 The New York Times Company.
+Licensed under the Apache 2.0 License. See LICENSE for more information.
+
