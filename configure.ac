@@ -24,9 +24,9 @@ AM_INIT_AUTOMAKE([foreign])
 #-----------------------------
 AC_PROG_CC
 AC_PROG_CC_C99
-if test "x$ac_cv_prog_cc_c99" = "xno"; then
+AS_IF([test "x$ac_cv_prog_cc_c99" = "xno"],[
 	AC_MSG_ERROR([Could not find a C99 compatible compiler])
-fi
+])
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
@@ -34,9 +34,9 @@ AC_PROG_MAKE_SET
 
 # Check for rst utilities
 AC_CHECK_PROGS(RST2MAN, [rst2man rst2man.py], "no")
-if test "x$RST2MAN" = "xno"; then
+AS_IF([test "x$RST2MAN" = "xno"],[
 	AC_MSG_WARN([rst2man not found - not building man pages])
-fi
+])
 AM_CONDITIONAL(HAVE_RST2MAN, [test "x$RST2MAN" != "xno"])
 
 # Check for pkg-config
@@ -66,11 +66,11 @@ AC_ARG_ENABLE([query-arrays],
         [Turn verbose assertions on for tests]))
 
 # If set, extend CFLAGS with verbose assertions
-if test "x$enable_query_arrays" = "xyes"; then
+AS_IF([test "x$enable_query_arrays" = "xyes"],[
     vmod_queryfilter_arrays_enabled=1
-else
+],[
     vmod_queryfilter_arrays_enabled=0
-fi
+])
 
 AC_DEFINE_UNQUOTED(
     [VMOD_QUERYFILTER_ARRAYS_ENABLED],
