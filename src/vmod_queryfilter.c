@@ -16,6 +16,8 @@
  * limitations under the License.
  * 
  *===========================================================================*/
+
+#include "vmod_queryfilter_config.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -23,8 +25,11 @@
 
 #include "vrt.h"
 #include "bin/varnishd/cache.h"
-
 #include "vcc_if.h"
+
+/* Convenience macro used to test parameters for match: */
+#define PARAM_IS_MATCH(param, filter_name) \
+    current->value && !strcmp(filter_name,current->name)
 
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
@@ -42,6 +47,8 @@ typedef struct query_param {
  * @param ws_free pointer to char* at the head of the reserved workspace
  * @param ws_remain the amount of reserved workspace remaining, in bytes
  * @return on success the pointer to the head of the list; NULL on failure
+ *
+ * @TODO alignment for query_param_t structs!
  */
 static query_param_t*
 tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
@@ -51,6 +58,15 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
     char* ws_free_temp = *ws_free; /* Temporary copy of workspace head */
     unsigned remain_temp = *remain; /* Temporary allocation counter */
     query_param_t* head = NULL;
+    query_param_t* tail = NULL;
+
+    /* Move the free pointer up so that query_param_t objects allocated on
+     * WS storage are properly aligned: */
+    size_t align_remain = (size_t)ws_free_temp % sizeof(char*);
+    if( align_remain ) {
+        ws_free_temp += (sizeof(char*) - align_remain);
+        remain_temp -= (sizeof(char*) - align_remain);
+    };
 
     /* Tokenize the query parameters into a linked list: */
     for(param_str = strtok_r(query_str, "&", &save_ptr); param_str;
@@ -70,6 +86,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
 
         param->name = param_str;
         param->value = strchr(param_str,'=');
+        param->next = NULL;
         if( param->value ) {
             *(param->value++) = '\0';
             if( *(param->value) == '\0' ) {
@@ -79,14 +96,20 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         else {
             param->value = NULL;
         };
-        param->next = head;
-        head = param;
+
+        if( tail ) {
+            tail->next = param;
+            tail = param;
+        }
+        else {
+            head = tail = param;
+        };
     };
 
     (*ws_free) = ws_free_temp;
     (*remain) = remain_temp;
     return head;
-};
+}
 
 /* Hacky workspace string copy. We pray for inline. ;)
  *
@@ -106,7 +129,7 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
         *remain -= buf_size;
     };
     return dst;
-};
+}
 
 /** Entrypoint for filterparams.
  *
@@ -192,11 +215,18 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     {
         for(current = head; current != NULL; current=current->next)
         {
-            if(current->value && strcmp(filter_name,current->name) == 0) {
+            if(PARAM_IS_MATCH(current, filter_name)) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
+/* If arrays are not enabled (default), we just break after the first match
+ * to avoid unnecessary checks. However, for arrays it is necessary to keep
+ * iterating through the list to find additional matches. A side effect of this
+ * is that all elements of a given array will be rewritten in sequence next to
+ * each other in the output array: */
+#if !VMOD_QUERYFILTER_ARRAYS_ENABLED
                 break;
+#endif /* VMOD_QUERYFILTER_ARRAYS_ENABLED */
             };
         };
     };
@@ -208,7 +238,7 @@ release_okay:
 release_bail:
     WS_Release(workspace, 0);
     return NULL;
-};
+}
 
 /* EOF */
 

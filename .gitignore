@@ -1,0 +1,52 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Autogen'ed files:
+Makefile.in
+aclocal.m4
+ar-lib
+autom4te.cache
+build
+compile
+config.guess
+vmod_queryfilter_config.h.in
+config.h.in
+config.h.in~
+config.sub
+configure
+depcomp
+install-sh
+ltmain.sh
+m4/*
+missing
+test-driver
+
+# Vim temp files:
+*.swp
+
+# Other local dev files
+vmod_queryfilter.3
+
+# Things not to ignore
+m4/ax_*

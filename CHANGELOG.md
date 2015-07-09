@@ -1,3 +1,15 @@
+v0.1.0 2015/07/09
+-----------------
+
+ - Added the `--enable-query-arrays` feature to resolve Issue #2.
+ - Updated workspace usage to guarantee proper alignment for structs
+ - General configuration and doc cleanup
+ - Query parameters are now search in forward order, instead of reverse. This
+   only makes a difference for query arrays (i.e. it guarantees arrays aren't
+   re-ordered)
+ - Use md2man (when available) to generate manpage for make dist
+
+
 v0.0.4 2015/02/06
 -----------------
 
