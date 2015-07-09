@@ -51,11 +51,13 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 # Check for rst utilities
-AC_CHECK_PROGS(RST2MAN, [rst2man rst2man.py], "no")
-AS_IF([test "x$RST2MAN" = "xno"],[
-	AC_MSG_WARN([rst2man not found - not building man pages])
+AC_ARG_VAR([MD2MAN],
+    [path to the m2dman tool used to build man pages (optional)])
+AC_PATH_PROG(MD2MAN, [md2man-roff],[no])
+AS_IF([test "x$MD2MAN" == "xno"],[
+	AC_MSG_WARN([md2man not found - not building man pages])
 ])
-AM_CONDITIONAL(HAVE_RST2MAN, [test "x$RST2MAN" != "xno"])
+AM_CONDITIONAL(HAVE_MD2MAN, [test "x$MD2MAN" != "xno"])
 
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
