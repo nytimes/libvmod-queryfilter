@@ -49,4 +49,4 @@ test-driver
 vmod_queryfilter.3
 
 # Things not to ignore
-m4/ax_*
+!m4/ax_*
