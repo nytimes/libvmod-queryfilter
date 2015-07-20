@@ -89,21 +89,31 @@
 # any additional characters to allow as literals (useful for AS_TR_SH
 # and AS_TR_CPP to perform inline conversion of whitespace to _).  The
 # order of the arguments allows reuse of m4_default.
-m4_define([AS_LITERAL_IF],
-[_$0(m4_expand([$1]), [  ][
-])([$4], [$3], [$2])])
+m4_ifndef([AS_LITERAL_IF],[
+    m4_define([AS_LITERAL_IF],
+    [_$0(m4_expand([$1]), [  ][
+    ])([$4], [$3], [$2])])
+])
 
-m4_define([_AS_LITERAL_IF],
-[m4_if(m4_index([$1], [@S|@]), [-1], [$0_(m4_translit([$1],
-  [-:=%/@{}[]#(),.$2]]]m4_dquote(m4_dquote(m4_defn([m4_cr_symbols2])))[[,
-  [++++++$$`````]))], [$0_NO])])
+m4_ifndef([_AS_LITERAL_IF],[
+    m4_define([_AS_LITERAL_IF],
+    [m4_if(m4_index([$1], [@S|@]), [-1], [$0_(m4_translit([$1],
+      [-:=%/@{}[]#(),.$2]]]m4_dquote(m4_dquote(m4_defn([m4_cr_symbols2])))[[,
+      [++++++$$`````]))], [$0_NO])])
+])
 
-m4_define([_AS_LITERAL_IF_],
-[m4_if(m4_translit([$1], [+]), [], [$0YES],
-       m4_translit([$1], [$]), [], [m4_default], [$0NO])])
+m4_ifndef([_AS_LITERAL_IF_],[
+    m4_define([_AS_LITERAL_IF_],
+    [m4_if(m4_translit([$1], [+]), [], [$0YES],
+           m4_translit([$1], [$]), [], [m4_default], [$0NO])])
+])
 
-m4_define([_AS_LITERAL_IF_YES], [$3])
-m4_define([_AS_LITERAL_IF_NO], [$2])
+m4_ifndef([_AS_LITERAL_IF_YES],[
+    m4_define([_AS_LITERAL_IF_YES], [$3])
+])
+m4_ifndef([_AS_LITERAL_IF_NO],[
+    m4_define([_AS_LITERAL_IF_NO], [$2])
+])
 
 # AS_LITERAL_WORD_IF(EXPRESSION, IF-LITERAL, IF-NOT-LITERAL,
 #                    [IF-SIMPLE-REF = IF-NOT-LITERAL])
