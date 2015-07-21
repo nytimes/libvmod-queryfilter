@@ -1,6 +1,10 @@
+v0.1.1 2015/07/20
+-----------------
+ - Added additional m4 macros for backwards compatibility with older versions
+   of autoconf and pkg-config (pulled from m4sh and pkg.m4).
+
 v0.1.0 2015/07/09
 -----------------
-
  - Added the `--enable-query-arrays` feature to resolve Issue #2.
  - Updated workspace usage to guarantee proper alignment for structs
  - General configuration and doc cleanup
@@ -12,26 +16,22 @@ v0.1.0 2015/07/09
 
 v0.0.4 2015/02/06
 -----------------
-
 Remove a kludge and save a few bytes of WS on success.
 
 v0.0.3 2015/02/03
 -----------------
-
 ### Bugfixes
 Check for empty query parameter values.
 
 
 v0.0.2 2015/01/29
 -----------------
-
 ### Bugfixes
 Removed linked list node removal to patch bug where match search could run off the end of the list.
 
 
 v0.0.1 2015/01/27
 -----------------
-
 ### Optimizations
 On matching query parameter, remove matching item from linked list to reduce
 superfluous node traversal.
@@ -49,6 +49,5 @@ Was failing for URI's containing only one of the query terms, e.g.:
 
 v0.0.0 2015/01/26
 -----------------
-
 Initial version.
 
