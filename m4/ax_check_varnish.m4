@@ -4,8 +4,8 @@
 #
 #
 # SYNOPSIS
-#
 #  AX_CHECK_VARNISH3_SRC()
+#  AX_CHECK_VARNISH4_SRC()
 #
 # DESCRIPTION
 #   This macro finds files, programs, and scripts required to build a vmod for
@@ -45,7 +45,7 @@
 #   limitations under the License.
 # =============================================================================
 
-# serial 1
+# serial 2
 
 # AX_CHECK_VARNISH3_SRC()
 # ---------------------------------------------------------------
@@ -76,6 +76,64 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
         AC_SUBST([VMOD_PY],[$vmod_py_path])
     ],[
         AC_MSG_ERROR([Invalid Varnish 3 source: $vmod_py_path not found])
+    ])
+
+    #--- Varnishtest: ---
+    # Check that varnishtest is built in the varnish source directory:
+    AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$VARNISHSRC/bin/varnishtest])
+    AS_IF([test "x$VARNISHTEST" == "x"],[
+        AC_MSG_ERROR([Unable to find varnishtest: please build varnish])
+    ])
+
+    #--- VMOD Installation directory:
+    # If not explicitly set, attempt to determine vmoddir via pkg-config
+    # TODO: use PKG_CHECK_VAR
+    AS_IF([test "x$VMODDIR" = "x"],[
+        # I'm not sure we should just silently export variables on behalf of
+        # the user. However, existing users already expect this to work,
+        # setting only VARNISHSRC. We try once without and then do it for them:
+        PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[],[
+            AC_MSG_WARN([No VMODDIR set and unable to locate via pkg-config.
+Trying now with PKG_CONFIG_PATH=$VARNISHSRC....
+
+To avoid this warning in the future, consider setting the VMODDIR environment
+variable or re-running configure with a PKG_CONFIG_PATH pointing to your
+varnish source directory, e.g.:
+
+${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
+
+])
+            export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
+            PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[],[
+                AC_MSG_ERROR([Unable to determine VMODDIR])
+            ])
+        ])
+    ])
+])
+
+
+# AX_CHECK_VARNISH4_SRC()
+# ---------------------------------------------------------------
+AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
+    #--- Declare our precious variables ---
+    AC_ARG_VAR([VARNISHSRC],[path to Varnish source tree (mandatory)])
+    AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
+    AC_ARG_VAR([VMODDIR],
+        [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
+
+    #--- Varnish Source Tree: ---
+    # Locate the varnish source tree
+    AS_IF([test "x$VARNISHSRC" = "x" -o ! -d "$VARNISHSRC"],[
+        AC_MSG_ERROR([VARNISHSRC must be set to the varnish source tree])
+    ])
+    VARNISHSRC=$(cd $VARNISHSRC && pwd)
+
+    # And that we have vmod.py:
+    vmod_py_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
+    AC_CHECK_FILE([$vmod_py_path],[
+        AC_SUBST([VMOD_PY],[$vmod_py_path])
+    ],[
+        AC_MSG_ERROR([Invalid Varnish 4 source: $vmod_py_path not found])
     ])
 
     #--- Varnishtest: ---
