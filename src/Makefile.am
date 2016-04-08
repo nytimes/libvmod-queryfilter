@@ -6,10 +6,11 @@
 
 AM_CPPFLAGS = \
     -I@VARNISHSRC@/include \
+    -I@VARNISHSRC@/bin/varnishd \
     -I@VARNISHSRC@ \
     -I@top_builddir@/include
 
-vmoddir = @VMODDIR@
+vmoddir = @VMOD_DIR@
 vmod_LTLIBRARIES = libvmod_queryfilter.la
 
 libvmod_queryfilter_la_LDFLAGS = \
@@ -23,8 +24,15 @@ libvmod_queryfilter_la_SOURCES = \
 	vcc_if.h \
 	vmod_queryfilter.c
 
+if VARNISHSRC_3_X
 vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter.vcc
-	@PYTHON@ @VMOD_PY@ @top_srcdir@/src/vmod_queryfilter.vcc
+	@PYTHON@ @VMODTOOL@ @top_srcdir@/src/vmod_queryfilter.vcc
+endif
+
+if VARNISHSRC_4_X
+vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter4.vcc
+	@PYTHON@ @VMODTOOL@ @top_srcdir@/src/vmod_queryfilter4.vcc
+endif
 
 VMOD_TESTS = @abs_srcdir@/tests/*.vtc
 .PHONY: $(VMOD_TESTS)
