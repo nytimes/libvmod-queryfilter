@@ -118,20 +118,14 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 # AX_VERIFY_VARNISH3_BUILD[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
 # ---------------------------------------------------------------
 AC_DEFUN([AX_VERIFY_VARNISH3_BUILD],[
-    # Ensure varnishapi.h is where we expect it:
-    varnishapi_path=[$VARNISHSRC/include/varnishapi.h]
-    AC_CHECK_FILES([$varnishapi_path],[],[
-        # And that we have vmod.py:
-        vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
-        AC_CHECK_FILE([$vmod_py_path],[
-            AC_SUBST([VMOD_PY],[$vmod_py_path])
-            $1
-        ],[
-            $2
-        ])
+    # Check that we have vmod.py:
+    vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
+    AC_CHECK_FILE([$vmod_py_path],[
+        AC_SUBST([VMOD_PY],[$vmod_py_path])
+        $1
+    ],[
+        $2
     ])
-
-    AS_IF([test "x$VMOD_PY" != "x"],[$1],[$2])
 ])
 
 
