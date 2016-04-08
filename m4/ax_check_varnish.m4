@@ -15,7 +15,7 @@
 #   Declares the following precious variables:
 #    * VARNISHSRC - path to source directory
 #    * VARNISHTEST - path to varnishtest vtc runner
-#    * VMODDIR - path to vmod installation directory
+#    * VMOD_DIR - path to vmod installation directory
 #
 #  Sets the following output variables (in addition to those listed above):
 #    * VMODTOOL - path to the vmod.py utility script used to generate certain
@@ -27,7 +27,7 @@
 #    * Verify that the Varnish source includes varnishapi.h (3.x sanity check)
 #    * Set the VMODTOOL output variable to the path to the vmod.py utility
 #    * If unset, set the VARNISHTEST output variable to the path to varnishtest
-#    * If unset, Set the VMODDIR output variable to the vmod installation dir
+#    * If unset, Set the VMOD_DIR output variable to the vmod installation dir
 #
 # LICENSE
 #
@@ -78,24 +78,24 @@ AC_DEFUN([AX_PROG_VARNISHTEST],[
 ])
 
 
-# AX_CHECK_VMODDIR[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
+# AX_CHECK_VMOD_DIR[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
 # ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VMODDIR],[
-    AC_ARG_VAR([VMODDIR],
+AC_DEFUN([AX_CHECK_VMOD_DIR],[
+    AC_ARG_VAR([VMOD_DIR],
         [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
 
     # If not explicitly set, attempt to determine vmoddir via pkg-config
-    AS_IF([test "x$VMODDIR" = "x"],[
+    AS_IF([test "x$VMOD_DIR" = "x"],[
         # NOTE:
         # I'm not sure we should just silently export variables on behalf of
         # the user. However, existing users already expect this to work,
         # setting only VARNISHSRC. We try once without and then do it for them:
-        PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[$1],[
+        PKG_CHECK_VAR([VMOD_DIR],[varnishapi],[vmoddir],[$1],[
             AC_MSG_WARN([
-No VMODDIR set and unable to locate via pkg-config.
+No VMOD_DIR set and unable to locate via pkg-config.
 Trying now with PKG_CONFIG_PATH=$VARNISHSRC....
 
-To avoid this warning in the future, consider setting the VMODDIR environment
+To avoid this warning in the future, consider setting the VMOD_DIR environment
 variable or re-running configure with a PKG_CONFIG_PATH pointing to your
 varnish source directory, e.g.:
 
@@ -104,7 +104,7 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
             ])
 
             export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
-            PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[$1],[$2])
+            PKG_CHECK_VAR([VMOD_DIR],[varnishapi],[vmoddir],[$1],[$2])
         ])
     ])
 ])
@@ -135,7 +135,7 @@ AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     AX_CHECK_VARNISHSRC([
         AX_VERIFY_VARNISH3_BUILD([
             AX_PROG_VARNISHTEST([
-                AX_CHECK_VMODDIR([
+                AX_CHECK_VMOD_DIR([
                     AC_SUBST([VARNISH_API_MAJOR],[3])
                 ])
             ])
@@ -170,7 +170,7 @@ AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
     AX_CHECK_VARNISHSRC([
         AX_VERIFY_VARNISH4_BUILD([
             AX_PROG_VARNISHTEST([
-                AX_CHECK_VMODDIR([
+                AX_CHECK_VMOD_DIR([
                     AC_SUBST([VARNISH_API_MAJOR],[4])
                 ])
             ])
