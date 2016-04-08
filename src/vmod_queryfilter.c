@@ -24,14 +24,21 @@
 #include <stdlib.h>
 
 #include "vrt.h"
+#include "vcc_if.h"
+
+/* Varnish 4.x */
 #if VARNISH_API_MAJOR == 4
 #include "vre.h"
 #include "cache/cache.h"
+typedef const struct vrt_ctx req_ctx;
+
+/* Varnish 3.x: */
 #elif VARNISH_API_MAJOR == 3
-#include "bin/varnishd/cache.h"
+#include "cache.h"
+typedef struct sess req_ctx;
+
 #endif /* VARNISH_API_MAJOR == 4 */
 
-#include "vcc_if.h"
 
 /* Convenience macro used to test parameters for match: */
 #define PARAM_IS_MATCH(param, filter_name) \
@@ -155,7 +162,7 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
  * @return filtered URI on success; NULL on failure
  */
 const char*
-vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
+vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
 {
     char* saveptr;
     char* new_uri = NULL;
@@ -164,7 +171,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     char* params;
     char* ws_free;
     unsigned ws_remain;
-    struct ws* workspace = sp->wrk->ws;
+    struct ws* workspace = sp->ws;
     query_param_t* head = NULL;
     query_param_t* current;
     const char* filter_name;
