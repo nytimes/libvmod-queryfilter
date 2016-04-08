@@ -56,14 +56,12 @@
 AC_DEFUN([AX_CHECK_VARNISHSRC],[
     AC_ARG_VAR([VARNISHSRC],[path to Varnish source tree (mandatory)])
 
-    #--- Varnish Source Tree: ---
     # Locate the varnish source tree
     AS_IF([test "x$VARNISHSRC" != "x" -a -d "$VARNISHSRC"],[
-            VARNISHSRC=$(cd $VARNISHSRC && pwd)
-            $1
-        ],[
-            $2
-        ]
+        VARNISHSRC=$(cd $VARNISHSRC && pwd)
+        $1
+    ],[
+        $2
     ])
 ])
 
@@ -73,7 +71,7 @@ AC_DEFUN([AX_CHECK_VARNISHSRC],[
 AC_DEFUN([AX_PROG_VARNISHTEST],[
     AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
 
-    # Check that varnishtest is built in the varnish source directory:
+    # Check that varnishtest is built and in the varnish source directory:
     AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$VARNISHSRC/bin/varnishtest])
     AS_IF([test "x$VARNISHTEST" !== "x"],[$1],[$2])
 ])
@@ -82,6 +80,9 @@ AC_DEFUN([AX_PROG_VARNISHTEST],[
 # AX_CHECK_VMODDIR[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VMODDIR],[
+    AC_ARG_VAR([VMODDIR],
+        [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
+
     # If not explicitly set, attempt to determine vmoddir via pkg-config
     # TODO: use PKG_CHECK_VAR
     AS_IF([test "x$VMODDIR" = "x"],[
@@ -122,6 +123,9 @@ AC_DEFUN([AX_VERIFY_VARNISH3_BUILD],[
         vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
         AC_CHECK_FILE([$vmod_py_path],[
             AC_SUBST([VMOD_PY],[$vmod_py_path])
+            $1
+        ],[
+            $2
         ])
     ])
 
@@ -131,9 +135,6 @@ AC_DEFUN([AX_VERIFY_VARNISH3_BUILD],[
 # AX_CHECK_VARNISH3_SRC[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
-    AC_ARG_VAR([VMODDIR],
-        [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
-
     AX_CHECK_VARNISHSRC([
         AX_VERIFY_VARNISH3_BUILD([
             AX_PROG_VARNISHTEST([
