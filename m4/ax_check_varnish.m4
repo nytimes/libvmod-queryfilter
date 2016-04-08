@@ -4,8 +4,8 @@
 #
 #
 # SYNOPSIS
-#  AX_CHECK_VARNISH3_SRC()
-#  AX_CHECK_VARNISH4_SRC()
+#  AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_CHECK_VARNISH4_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
 #   This macro finds files, programs, and scripts required to build a vmod for
