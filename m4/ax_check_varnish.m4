@@ -138,7 +138,7 @@ AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
         ])
     ])
 
-    AS_IF([test "x$VARNISH_API_VERSION" != "x"],[$1],[$2])
+    AS_IF([test "x$VARNISH_API_MAJOR" != "x"],[$1],[$2])
 ])
 
 ## EOF
