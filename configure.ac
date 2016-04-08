@@ -57,7 +57,7 @@ AC_PATH_PROG(MD2MAN, [md2man-roff],[no])
 AS_IF([test "x$MD2MAN" == "xno"],[
 	AC_MSG_WARN([md2man not found - not building man pages])
 ])
-AM_CONDITIONAL(HAVE_MD2MAN, [test "x$MD2MAN" != "xno"])
+AM_CONDITIONAL([HAVE_MD2MAN], [test "x$MD2MAN" != "xno"])
 
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
@@ -78,6 +78,11 @@ AC_CHECK_HEADERS([sys/stdlib.h])
 AX_CHECK_VARNISH_SRC([],[
     AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
 ])
+AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
+AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
+AC_DEFINE_UNQUOTED(
+    [VARNISH_API_MAJOR], [$VARNISH_API_MAJOR], [Varnish API major version])
+
 
 #-----------------------------
 #           Types:
