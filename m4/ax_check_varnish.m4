@@ -18,14 +18,14 @@
 #    * VMODDIR - path to vmod installation directory
 #
 #  Sets the following output variables (in addition to those listed above):
-#    * VMOD_PY - path to the vmod.py utility script used to generate certain
+#    * VMODTOOL - path to the vmod.py utility script used to generate certain
 #                auxiliary files (typically named vcc_if.c and vcc_if.h)
 #
 #  And performs the following actions:
 #    * Require VARNISHSRC to be set to the path to a Varnish 3 source directory
 #    * If relative, convert VARNISHSRC to an absolute file path
 #    * Verify that the Varnish source includes varnishapi.h (3.x sanity check)
-#    * Set the VMOD_PY output variable to the path to the vmod.py utility
+#    * Set the VMODTOOL output variable to the path to the vmod.py utility
 #    * If unset, set the VARNISHTEST output variable to the path to varnishtest
 #    * If unset, Set the VMODDIR output variable to the vmod installation dir
 #
@@ -121,7 +121,7 @@ AC_DEFUN([AX_VERIFY_VARNISH3_BUILD],[
     # Check that we have vmod.py:
     vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
     AC_CHECK_FILE([$vmod_py_path],[
-        AC_SUBST([VMOD_PY],[$vmod_py_path])
+        AC_SUBST([VMODTOOL],[$vmod_py_path])
         $1
     ],[
         $2
@@ -156,7 +156,7 @@ AC_DEFUN([AX_VERIFY_VARNISH4_BUILD],[
     # Check that we have vmodtool.py:
     vmod_py_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
     AC_CHECK_FILE([$vmod_py_path],[
-        AC_SUBST([VMOD_PY],[$vmod_py_path])
+        AC_SUBST([VMODTOOL],[$vmod_py_path])
         $1
     ],[
         $2
