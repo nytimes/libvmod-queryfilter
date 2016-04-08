@@ -47,7 +47,7 @@
 
 # serial 2
 
-# AX_CHECK_VARNISH3_SRC()
+# AX_CHECK_VARNISH3_SRC[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
     #--- Declare our precious variables ---
@@ -112,7 +112,7 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 ])
 
 
-# AX_CHECK_VARNISH4_SRC()
+# AX_CHECK_VARNISH4_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
     #--- Declare our precious variables ---
