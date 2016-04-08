@@ -48,7 +48,7 @@
 # serial 2
 
 # =============================================================================
-#                              Common Functions:
+#                              Utility Macros:
 # =============================================================================
 
 # AX_CHECK_VARNISHSRC[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
@@ -84,8 +84,8 @@ AC_DEFUN([AX_CHECK_VMODDIR],[
         [vmod installation directory @<:@LIBDIR/varnish/vmods@:>@])
 
     # If not explicitly set, attempt to determine vmoddir via pkg-config
-    # TODO: use PKG_CHECK_VAR
     AS_IF([test "x$VMODDIR" = "x"],[
+        # NOTE:
         # I'm not sure we should just silently export variables on behalf of
         # the user. However, existing users already expect this to work,
         # setting only VARNISHSRC. We try once without and then do it for them:
@@ -100,7 +100,8 @@ varnish source directory, e.g.:
 
 ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 
-])
+            ])
+
             export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
             PKG_CHECK_VAR([VMODDIR],[varnishapi],[vmoddir],[$1],[$2])
         ])
@@ -181,8 +182,21 @@ AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
         ])
     ])
 
-    AS_IF([test "x$VARNISH_API_MAJOR" = "x3"],[$1],[$2])
+    AS_IF([test "x$VARNISH_API_MAJOR" = "x4"],[$1],[$2])
 ])
+
+# =============================================================================
+#                                 Generic:
+# =============================================================================
+
+# AX_CHECK_VARNISH_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------
+AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
+    AX_CHECK_VARNISH4_SRC([$1],[
+        AX_CHECK_VARNISH3_SRC([$1],[$2])
+    ])
+])
+
 
 ## EOF
 
