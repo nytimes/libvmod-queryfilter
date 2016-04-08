@@ -75,7 +75,9 @@ AC_CHECK_PROGS(PYTHON,
 AC_CHECK_HEADERS([stdlib.h string.h])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
-AX_CHECK_VARNISH3_SRC
+AX_CHECK_VARNISH_SRC([],[
+    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
+])
 
 #-----------------------------
 #           Types:
