@@ -24,7 +24,13 @@
 #include <stdlib.h>
 
 #include "vrt.h"
+#if VARNISH_API_MAJOR == 4
+#include "vre.h"
+#include "cache/cache.h"
+#elif VARNISH_API_MAJOR == 3
 #include "bin/varnishd/cache.h"
+#endif /* VARNISH_API_MAJOR == 4 */
+
 #include "vcc_if.h"
 
 /* Convenience macro used to test parameters for match: */
