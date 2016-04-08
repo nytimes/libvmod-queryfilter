@@ -4,6 +4,7 @@
 #
 #
 # SYNOPSIS
+#  AX_CHECK_VARNISH_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #  AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #  AX_CHECK_VARNISH4_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
@@ -58,7 +59,7 @@ AC_DEFUN([AX_CHECK_VARNISHSRC],[
 
     # Locate the varnish source tree
     AS_IF([test "x$VARNISHSRC" != "x" -a -d "$VARNISHSRC"],[
-        VARNISHSRC=$(cd $VARNISHSRC && pwd)
+        VARNISHSRC=[$(cd $VARNISHSRC && pwd)]
         $1
     ],[
         $2
@@ -191,7 +192,7 @@ AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
 
 # AX_CHECK_VARNISH_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
+AC_DEFUN([AX_CHECK_VARNISH_SRC],[
     AX_CHECK_VARNISH4_SRC([$1],[
         AX_CHECK_VARNISH3_SRC([$1],[$2])
     ])
