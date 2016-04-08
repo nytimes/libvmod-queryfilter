@@ -11,10 +11,17 @@
 #  AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   Declares the following precious variables:
-#    * VARNISHSRC - path to source directory
-#    * VARNISHTEST - path to varnishtest vtc runner
-#    * VMOD_DIR - path to vmod installation directory
+#   * AX_CHECK_VARNISHSRC_DIR - Verify built varnish source directory.
+#   * AX_PROG_VMODTOOL - Find and set the path to the vmod tool.
+#   * AX_PROG_VARNISHTEST - Find and set the path to varnishtest.
+#   * AX_CHECK_VMOD_DIR - Determine vmod installation directory.
+#   * AX_CHECK_VARNISH_VMOD_DEV - Ensure that we have everything necessary
+#                                 for Varnish vmod development.
+#
+#  Declares the following precious variables:
+#   * VARNISHSRC - path to source directory
+#   * VARNISHTEST - path to varnishtest vtc runner
+#   * VMOD_DIR - path to vmod installation directory
 #
 #  Sets the following output variables (in addition to those listed above):
 #    * VMODTOOL - path to the vmod.py utility script used to generate certain
@@ -130,10 +137,16 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 # AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ------------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
+    # Ensure we have/know everything we need for vmod development:
+    # - Check that VARNISHSRC is set and is a directory we can access
+    # - Determine the path to varnishtest
+    # - Check vmod installation directory
+    # - Find the vmod tool (vmod.py or vmodtool.py) - this effectively
+    #   also determines the Varnish Cache major version
     AX_CHECK_VARNISHSRC_DIR([
-        AX_PROG_VMODTOOL([
-            AX_PROG_VARNISHTEST([
-                AX_CHECK_VMOD_DIR
+        AX_PROG_VARNISHTEST([
+            AX_CHECK_VMOD_DIR([
+                AX_PROG_VMODTOOL
             ])
         ])
     ])
