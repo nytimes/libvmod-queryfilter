@@ -74,7 +74,7 @@ AC_DEFUN([AX_PROG_VARNISHTEST],[
 
     # Check that varnishtest is built and in the varnish source directory:
     AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$VARNISHSRC/bin/varnishtest])
-    AS_IF([test "x$VARNISHTEST" !== "x"],[$1],[$2])
+    AS_IF([test "x$VARNISHTEST" != "x"],[$1],[$2])
 ])
 
 
