@@ -4,14 +4,13 @@
 #
 #
 # SYNOPSIS
-#  AX_CHECK_VARNISH_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
-#  AX_CHECK_VARNISH3_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
-#  AX_CHECK_VARNISH4_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_CHECK_VARNISHSRC_DIR([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_CHECK_VMOD_DIR([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   This macro finds files, programs, and scripts required to build a vmod for
-#   varnish 3.x using a path to varnish 3.x source directory (must be built!).
-# 
 #   Declares the following precious variables:
 #    * VARNISHSRC - path to source directory
 #    * VARNISHTEST - path to varnishtest vtc runner
@@ -19,13 +18,12 @@
 #
 #  Sets the following output variables (in addition to those listed above):
 #    * VMODTOOL - path to the vmod.py utility script used to generate certain
-#                auxiliary files (typically named vcc_if.c and vcc_if.h)
+#                 auxiliary files (typically named vcc_if.c and vcc_if.h)
 #
 #  And performs the following actions:
-#    * Require VARNISHSRC to be set to the path to a Varnish 3 source directory
+#    * Require VARNISHSRC to be set to the path to a Varnish source directory
 #    * If relative, convert VARNISHSRC to an absolute file path
-#    * Verify that the Varnish source includes varnishapi.h (3.x sanity check)
-#    * Set the VMODTOOL output variable to the path to the vmod.py utility
+#    * Set the VMODTOOL output variable to the path to the vmod utility
 #    * If unset, set the VARNISHTEST output variable to the path to varnishtest
 #    * If unset, Set the VMOD_DIR output variable to the vmod installation dir
 #
@@ -48,13 +46,9 @@
 
 # serial 2
 
-# =============================================================================
-#                              Utility Macros:
-# =============================================================================
-
-# AX_CHECK_VARNISHSRC[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
+# AX_CHECK_VARNISHSRC_DIR([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISHSRC],[
+AC_DEFUN([AX_CHECK_VARNISHSRC_DIR],[
     AC_ARG_VAR([VARNISHSRC],[path to Varnish source tree (mandatory)])
 
     # Locate the varnish source tree
@@ -67,7 +61,30 @@ AC_DEFUN([AX_CHECK_VARNISHSRC],[
 ])
 
 
-# AX_PROG_VARNISHTEST[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
+# AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------
+AC_DEFUN([AX_PROG_VMODTOOL],[
+    # Check for vmodtool.py (varnish 4.x):
+    vmodtool_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
+    AC_CHECK_FILE([$vmodtool_path],[
+        AC_SUBST([VMODTOOL],[$vmodtool_path])
+        AC_SUBST([VARNISH_API_MAJOR],[4])
+        $1
+    ],[
+        # Check for vmod.py (varnish 3.x):
+        vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
+        AC_CHECK_FILE([$vmod_py_path],[
+            AC_SUBST([VMODTOOL],[$vmod_py_path])
+            AC_SUBST([VARNISH_API_MAJOR],[3])
+            $1
+        ],[
+            $2
+        ])
+    ])
+])
+
+
+# AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
 AC_DEFUN([AX_PROG_VARNISHTEST],[
     AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
@@ -78,7 +95,7 @@ AC_DEFUN([AX_PROG_VARNISHTEST],[
 ])
 
 
-# AX_CHECK_VMOD_DIR[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
+# AX_CHECK_VMOD_DIR([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
 AC_DEFUN([AX_CHECK_VMOD_DIR],[
     AC_ARG_VAR([VMOD_DIR],
@@ -110,88 +127,19 @@ ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 ])
 
 
-
-# =============================================================================
-#                              Varnish 3:
-# =============================================================================
-
-# AX_VERIFY_VARNISH3_BUILD[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
-# ---------------------------------------------------------------
-AC_DEFUN([AX_VERIFY_VARNISH3_BUILD],[
-    # Check that we have vmod.py:
-    vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
-    AC_CHECK_FILE([$vmod_py_path],[
-        AC_SUBST([VMODTOOL],[$vmod_py_path])
-        $1
-    ],[
-        $2
-    ])
-])
-
-
-# AX_CHECK_VARNISH3_SRC[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
-# ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH3_SRC],[
-    AX_CHECK_VARNISHSRC([
-        AX_VERIFY_VARNISH3_BUILD([
+# AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# ------------------------------------------------------------------
+AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
+    AX_CHECK_VARNISHSRC_DIR([
+        AX_PROG_VMODTOOL([
             AX_PROG_VARNISHTEST([
-                AX_CHECK_VMOD_DIR([
-                    AC_SUBST([VARNISH_API_MAJOR],[3])
-                ])
+                AX_CHECK_VMOD_DIR
             ])
         ])
     ])
 
-    AS_IF([test "x$VARNISH_API_MAJOR" = "x3"],[$1],[$2])
+    AS_IF([test "x$VARNISH_API_VERSION" != "x"],[$1],[$2])
 ])
-
-
-# =============================================================================
-#                              Varnish 4:
-# =============================================================================
-
-# AX_VERIFY_VARNISH4_BUILD[ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND]()
-# ---------------------------------------------------------------
-AC_DEFUN([AX_VERIFY_VARNISH4_BUILD],[
-    # Check that we have vmodtool.py:
-    vmod_py_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
-    AC_CHECK_FILE([$vmod_py_path],[
-        AC_SUBST([VMODTOOL],[$vmod_py_path])
-        $1
-    ],[
-        $2
-    ])
-])
-
-
-# AX_CHECK_VARNISH4_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
-# ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH4_SRC],[
-    AX_CHECK_VARNISHSRC([
-        AX_VERIFY_VARNISH4_BUILD([
-            AX_PROG_VARNISHTEST([
-                AX_CHECK_VMOD_DIR([
-                    AC_SUBST([VARNISH_API_MAJOR],[4])
-                ])
-            ])
-        ])
-    ])
-
-    AS_IF([test "x$VARNISH_API_MAJOR" = "x4"],[$1],[$2])
-])
-
-# =============================================================================
-#                                 Generic:
-# =============================================================================
-
-# AX_CHECK_VARNISH_SRC([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
-# ---------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH_SRC],[
-    AX_CHECK_VARNISH4_SRC([$1],[
-        AX_CHECK_VARNISH3_SRC([$1],[$2])
-    ])
-])
-
 
 ## EOF
 

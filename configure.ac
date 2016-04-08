@@ -75,14 +75,6 @@ AC_CHECK_PROGS(PYTHON,
 AC_CHECK_HEADERS([stdlib.h string.h])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
-AX_CHECK_VARNISH_SRC([],[
-    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
-])
-AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
-AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
-AC_DEFINE_UNQUOTED(
-    [VARNISH_API_MAJOR], [$VARNISH_API_MAJOR], [Varnish API major version])
-
 
 #-----------------------------
 #           Types:
@@ -94,6 +86,16 @@ AC_TYPE_SIZE_T
 #       Function Checks:
 #-----------------------------
 AC_CHECK_FUNCS([strchr])
+
+#-----------------------------
+#           Varnish:
+#-----------------------------
+AX_CHECK_VARNISH_VMOD_DEV([],[
+    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
+])
+
+AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
+AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
 
 #-----------------------------
 #    Configuration Options:
