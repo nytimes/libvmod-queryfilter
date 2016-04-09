@@ -11,7 +11,7 @@
 #  AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   * AX_CHECK_VARNISHSRC_DIR - Verify built varnish source directory.
+#   * AX_CHECK_VARNISHSRC_DIR - Verify varnish source directory exists.
 #   * AX_PROG_VMODTOOL - Find and set the path to the vmod tool.
 #   * AX_PROG_VARNISHTEST - Find and set the path to varnishtest.
 #   * AX_CHECK_VMOD_DIR - Determine vmod installation directory.
@@ -22,10 +22,8 @@
 #   * VARNISHSRC - path to source directory
 #   * VARNISHTEST - path to varnishtest vtc runner
 #   * VMOD_DIR - path to vmod installation directory
-#
-#  Sets the following output variables (in addition to those listed above):
-#    * VMODTOOL - path to the vmod.py utility script used to generate certain
-#                 auxiliary files (typically named vcc_if.c and vcc_if.h)
+#   * VMODTOOL - path to the vmod.py utility script used to generate certain
+#                auxiliary files (typically named vcc_if.c and vcc_if.h)
 #
 #  And performs the following actions:
 #    * Require VARNISHSRC to be set to the path to a Varnish source directory
@@ -71,6 +69,8 @@ AC_DEFUN([AX_CHECK_VARNISHSRC_DIR],[
 # AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
 AC_DEFUN([AX_PROG_VMODTOOL],[
+    AC_ARG_VAR([VMODTOOL], [Path to varnish vmod tool])
+
     # Check for vmodtool.py (varnish 4.x):
     vmodtool_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
     AC_CHECK_FILE([$vmodtool_path],[
