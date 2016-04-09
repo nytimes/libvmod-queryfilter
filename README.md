@@ -45,12 +45,12 @@ Before anything else is done, your source directory has to be initialized:
 ```
 
 ### Configuration
-This vmod must be compiled against a pre-built Varnish Cache 3.x source tree.
-The path to the Varnish Cache source tree is specified via the *VARNISHSRC*
-variable at configure time, e.g.:
+This vmod must be compiled against a pre-built Varnish Cache 3.x/4.x source
+tree. The path to the Varnish Cache source tree is specified via the
+*VARNISHSRC* variable at configure time, e.g.:
 
 ```Shell
-./configure VARNISHSRC=path/to/varnish-3.0.6 && make check
+./configure VARNISHSRC=path/to/varnish-M.m.p && make check
 ```
 
 Additional configuration variables and options can be found by invoking
@@ -71,11 +71,6 @@ to make this behavior run-time configurable in the next major-level release._
 Libvmod-queryfilter provides a set of simple unit tests driven by
 **varnishtest**. They can be executed as part of the build process by
 invoking `make check`.
-
-Notes
------
-There is only support for the Varnish 3 API at the moment, though support for
-the 4 series API is planned.
 
 LICENSE
 -------
