@@ -191,7 +191,8 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
     if( query_str == NULL ) {
-        goto release_bail;
+        new_uri_end = new_uri + strlen(uri);
+        goto release_okay;
     };
 
     /* Terminate the existing URI at the beginning of the query string: */
