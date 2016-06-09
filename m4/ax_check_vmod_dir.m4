@@ -11,7 +11,10 @@ AC_DEFUN([AX_CHECK_VMOD_DIR],[
         # the user. However, existing users already expect this to work,
         # setting only VARNISHSRC. We try once without and then do it for them:
         PKG_CHECK_VAR([VMOD_DIR],[varnishapi],[vmoddir],[$1],[
-            AC_MSG_WARN([
+            # If VARNISHSRC is defined, go ahead and extend pkg-config
+            # params to use it.
+            AS_IF([test "x$VARNISHSRC" != "x"],[
+                AC_MSG_WARN([
 No VMOD_DIR set and unable to locate via pkg-config.
 Trying now with PKG_CONFIG_PATH=$VARNISHSRC....
 
@@ -21,10 +24,11 @@ varnish source directory, e.g.:
 
 ${0} PKG_CONFIG_PATH="${VARNISHSRC}:\${PKG_CONFIG_PATH}" #...
 
-            ])
+                ])
 
-            export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
-            PKG_CHECK_VAR([VMOD_DIR],[varnishapi],[vmoddir],[$1],[$2])
+                export PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}"
+                PKG_CHECK_VAR([VMOD_DIR],[varnishapi],[vmoddir],[$1],[$2])
+            ],[$2])
         ])
     ])
 ])

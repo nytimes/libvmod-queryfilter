@@ -51,7 +51,7 @@ AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
     # - Check vmod installation directory
     # - Find the vmod tool (vmod.py or vmodtool.py) - this effectively
     #   also determines the Varnish Cache major version
-    AX_CHECK_VARNISHSRC_DIR([
+    AX_CHECK_VARNISHSRC([
         AX_PROG_VARNISHTEST([
             AX_CHECK_VMOD_DIR([
                 AX_PROG_VMODTOOL
