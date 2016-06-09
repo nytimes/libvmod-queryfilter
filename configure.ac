@@ -9,8 +9,8 @@
 #           Init:
 #-----------------------------
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (c) 2015 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [0.1.1])
+AC_COPYRIGHT([Copyright (c) 2016 The New York Times Company])
+AC_INIT([libvmod-queryfilter], [0.2.0])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
@@ -26,7 +26,7 @@ AC_SUBST([PACKAGE_URL],
     ["https://github.com/andrew-canaday/libvmod-queryfilter"])
 AC_SUBST([PACKAGE_LICENSE],["Apache"])
 AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
-AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2015 The New York Times Company"])
+AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2016 The New York Times Company"])
 AC_SUBST([PACKAGE_DESCRIPTION],["Simple Varnish query filter/sort VMOD"])
 AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
 

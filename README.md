@@ -72,8 +72,12 @@ Libvmod-queryfilter provides a set of simple unit tests driven by
 **varnishtest**. They can be executed as part of the build process by
 invoking `make check`.
 
+Notes
+-----
+Comprehensive VCC docs and m4 macro usage forthcoming.
+
 LICENSE
 -------
-Copyright © 2014,2015 The New York Times Company.
+Copyright © 2014-2016 The New York Times Company.
 Licensed under the Apache 2.0 License. See LICENSE for more information.
 
