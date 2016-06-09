@@ -4,10 +4,10 @@
 #
 #
 # SYNOPSIS
-#  AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   Ensure that we have everything necessary for Varnish vmod development.
+#  Find and set the path to varnishtest.
 #
 #  Declares the following precious variables:
 #   * VARNISHSRC - path to source directory
@@ -42,24 +42,15 @@
 
 # serial 2
 
-# AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
-# ------------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
-    # Ensure we have/know everything we need for vmod development:
-    # - Check that VARNISHSRC is set and is a directory we can access
-    # - Determine the path to varnishtest
-    # - Check vmod installation directory
-    # - Find the vmod tool (vmod.py or vmodtool.py) - this effectively
-    #   also determines the Varnish Cache major version
-    AX_CHECK_VARNISHSRC([
-        AX_PROG_VARNISHTEST([
-            AX_CHECK_VMOD_DIR([
-                AX_PROG_VMODTOOL
-            ])
-        ])
-    ])
+# AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# ---------------------------------------------------------------
+AC_DEFUN([AX_PROG_VARNISHTEST],[
+    AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
 
-    AS_IF([test "x$VARNISH_API_MAJOR" != "x"],[$1],[$2])
+    # Check that varnishtest is built and in the varnish source directory:
+    AC_PATH_PROG([VARNISHTEST],[varnishtest],[],
+        [$PATH:$VARNISHSRC/bin/varnishtest])
+    AS_IF([test "x$VARNISHTEST" != "x"],[$1],[$2])
 ])
 
 ## EOF

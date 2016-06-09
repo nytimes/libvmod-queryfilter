@@ -1,7 +1,7 @@
 /*=============================================================================
  * libvmod-queryfilter: Simple VMOD for filtering/sorting query strings
  *
- * Copyright 2015 The New York Times Company
+ * Copyright 2016 The New York Times Company
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,21 @@
 #include <stdlib.h>
 
 #include "vrt.h"
-#include "bin/varnishd/cache.h"
 #include "vcc_if.h"
+
+/* Varnish 4.x */
+#if VARNISH_API_MAJOR == 4
+#include "vre.h"
+#include "cache/cache.h"
+typedef const struct vrt_ctx req_ctx;
+
+/* Varnish 3.x: */
+#elif VARNISH_API_MAJOR == 3
+#include "cache.h"
+typedef struct sess req_ctx;
+
+#endif /* VARNISH_API_MAJOR == 4 */
+
 
 /* Convenience macro used to test parameters for match: */
 #define PARAM_IS_MATCH(param, filter_name) \
@@ -149,7 +162,7 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
  * @return filtered URI on success; NULL on failure
  */
 const char*
-vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
+vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
 {
     char* saveptr;
     char* new_uri = NULL;
@@ -158,7 +171,7 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     char* params;
     char* ws_free;
     unsigned ws_remain;
-    struct ws* workspace = sp->wrk->ws;
+    struct ws* workspace = sp->ws;
     query_param_t* head = NULL;
     query_param_t* current;
     const char* filter_name;
@@ -178,7 +191,8 @@ vmod_filterparams(struct sess *sp, const char *uri, const char* params_in)
     /* Find the query string, if present: */
     query_str = strchr(new_uri, '?');
     if( query_str == NULL ) {
-        goto release_bail;
+        new_uri_end = new_uri + strlen(uri);
+        goto release_okay;
     };
 
     /* Terminate the existing URI at the beginning of the query string: */

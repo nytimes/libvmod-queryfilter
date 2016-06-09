@@ -45,12 +45,12 @@ Before anything else is done, your source directory has to be initialized:
 ```
 
 ### Configuration
-This vmod must be compiled against a pre-built Varnish Cache 3.x source tree.
-The path to the Varnish Cache source tree is specified via the *VARNISHSRC*
-variable at configure time, e.g.:
+This vmod must be compiled against a pre-built Varnish Cache 3.x/4.x source
+tree. The path to the Varnish Cache source tree is specified via the
+*VARNISHSRC* variable at configure time, e.g.:
 
 ```Shell
-./configure VARNISHSRC=path/to/varnish-3.0.6 && make check
+./configure VARNISHSRC=path/to/varnish-M.m.p && make check
 ```
 
 Additional configuration variables and options can be found by invoking
@@ -74,11 +74,10 @@ invoking `make check`.
 
 Notes
 -----
-There is only support for the Varnish 3 API at the moment, though support for
-the 4 series API is planned.
+Comprehensive VCC docs and m4 macro usage forthcoming.
 
 LICENSE
 -------
-Copyright © 2014,2015 The New York Times Company.
+Copyright © 2014-2016 The New York Times Company.
 Licensed under the Apache 2.0 License. See LICENSE for more information.
 

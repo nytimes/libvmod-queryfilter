@@ -9,8 +9,8 @@
 #           Init:
 #-----------------------------
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (c) 2015 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [0.1.1])
+AC_COPYRIGHT([Copyright (c) 2016 The New York Times Company])
+AC_INIT([libvmod-queryfilter], [0.2.0])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
@@ -26,7 +26,7 @@ AC_SUBST([PACKAGE_URL],
     ["https://github.com/andrew-canaday/libvmod-queryfilter"])
 AC_SUBST([PACKAGE_LICENSE],["Apache"])
 AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
-AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2015 The New York Times Company"])
+AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2016 The New York Times Company"])
 AC_SUBST([PACKAGE_DESCRIPTION],["Simple Varnish query filter/sort VMOD"])
 AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
 
@@ -57,7 +57,7 @@ AC_PATH_PROG(MD2MAN, [md2man-roff],[no])
 AS_IF([test "x$MD2MAN" == "xno"],[
 	AC_MSG_WARN([md2man not found - not building man pages])
 ])
-AM_CONDITIONAL(HAVE_MD2MAN, [test "x$MD2MAN" != "xno"])
+AM_CONDITIONAL([HAVE_MD2MAN], [test "x$MD2MAN" != "xno"])
 
 # Check for pkg-config
 PKG_PROG_PKG_CONFIG
@@ -75,7 +75,6 @@ AC_CHECK_PROGS(PYTHON,
 AC_CHECK_HEADERS([stdlib.h string.h])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
-AX_CHECK_VARNISH3_SRC
 
 #-----------------------------
 #           Types:
@@ -87,6 +86,21 @@ AC_TYPE_SIZE_T
 #       Function Checks:
 #-----------------------------
 AC_CHECK_FUNCS([strchr])
+
+#-----------------------------
+#           Varnish:
+#-----------------------------
+AX_CHECK_VARNISH_VMOD_DEV([],[
+    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
+])
+AC_DEFINE_UNQUOTED(
+    [VARNISH_API_MAJOR],
+    [$VARNISH_API_MAJOR],
+    [Varnish API major version])
+
+
+AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
+AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
 
 #-----------------------------
 #    Configuration Options:

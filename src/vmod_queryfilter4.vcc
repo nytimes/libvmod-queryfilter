@@ -1,0 +1,2 @@
+$Module queryfilter Varnish Query Param Filter Module
+$Function STRING filterparams(STRING, STRING)
