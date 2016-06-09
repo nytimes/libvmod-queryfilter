@@ -74,6 +74,6 @@ invoking `make check`.
 
 LICENSE
 -------
-Copyright © 2014,2015 The New York Times Company.
+Copyright © 2014-2016 The New York Times Company.
 Licensed under the Apache 2.0 License. See LICENSE for more information.
 

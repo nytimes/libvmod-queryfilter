@@ -1,3 +1,9 @@
+v0.2.0 2016/06/09
+-----------------
+ - Varnish 4.x support added
+ - autoconf macros refactored and cleaned up to allow each component to be
+   specified individually, when desired
+
 v0.1.1 2015/07/20
 -----------------
  - Added additional m4 macros for backwards compatibility with older versions
