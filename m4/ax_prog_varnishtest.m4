@@ -1,5 +1,5 @@
 # =============================================================================
-# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_vmodtool.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_varnishtest.m4
 # =============================================================================
 #
 #
