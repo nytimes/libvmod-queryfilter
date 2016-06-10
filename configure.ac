@@ -10,7 +10,7 @@
 #-----------------------------
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (c) 2016 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [0.2.0],
+AC_INIT([libvmod-queryfilter], [0.2.1],
         [code@nytimes.com],[libvmod-queryfilter],
         [https://github.com/NYTimes/libvmod-queryfilter])
 AC_CONFIG_AUX_DIR([.])
