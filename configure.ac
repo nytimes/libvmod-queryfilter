@@ -23,7 +23,7 @@ AM_INIT_AUTOMAKE([foreign])
 #         Metadata:
 #-----------------------------
 AC_SUBST([PACKAGE_URL],
-    ["https://github.com/andrew-canaday/libvmod-queryfilter"])
+    ["https://github.com/NYTimes/libvmod-queryfilter"])
 AC_SUBST([PACKAGE_LICENSE],["Apache"])
 AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
 AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2016 The New York Times Company"])

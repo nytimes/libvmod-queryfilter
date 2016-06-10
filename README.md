@@ -59,7 +59,7 @@ Additional configuration variables and options can be found by invoking
 #### Query Arrays
 By default, libvmod-queryfilter assumes query parameters are individual
 name/value pairs (e.g. `a=1&b=2...`). Optional support for arrays in query
-parameters (e.g. `a[]=1&a[]=2...` - see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string) or [Issue #2](https://github.com/andrew-canaday/libvmod-queryfilter/issues/2))
+parameters (e.g. `a[]=1&a[]=2...` - see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string) or [Issue #2](https://github.com/NYTimes/libvmod-queryfilter/issues/2))
 can be enabled by passing the `--enable-query-arrays` at configure time. With
 this option enabled, array parameters will be preserved - in order - in the
 output URI.

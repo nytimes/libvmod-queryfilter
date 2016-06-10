@@ -1,5 +1,5 @@
 # =============================================================================
-# https://github.com/andrew-canaday/libvmod-queryfilter/m4/ax_check_varnish.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_check_varnish.m4
 # =============================================================================
 #
 #
