@@ -1,3 +1,9 @@
+v0.2.1 2016/06/10
+-----------------
+ - VCC 4 module docs
+ - Changes for migration to NYTimes account
+ - Macro docs for custom m4 files
+
 v0.2.0 2016/06/09
 -----------------
  - Varnish 4.x support added

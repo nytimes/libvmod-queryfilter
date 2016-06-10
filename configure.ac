@@ -10,7 +10,9 @@
 #-----------------------------
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright (c) 2016 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [0.2.0])
+AC_INIT([libvmod-queryfilter], [0.2.1],
+        [code@nytimes.com],[libvmod-queryfilter],
+        [https://github.com/NYTimes/libvmod-queryfilter])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
@@ -23,7 +25,7 @@ AM_INIT_AUTOMAKE([foreign])
 #         Metadata:
 #-----------------------------
 AC_SUBST([PACKAGE_URL],
-    ["https://github.com/andrew-canaday/libvmod-queryfilter"])
+    ["https://github.com/NYTimes/libvmod-queryfilter"])
 AC_SUBST([PACKAGE_LICENSE],["Apache"])
 AC_SUBST([PACKAGE_VENDOR],["The New York Times Company"])
 AC_SUBST([PACKAGE_COPYRIGHT],["copyright 2016 The New York Times Company"])

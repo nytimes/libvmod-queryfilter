@@ -20,6 +20,11 @@ to the VMOD, so by passing in parameter names in a consistent manner (e.g.,
 alphabetical order), a resulting filtered request URL will be unique for its
 combination of parameter names and values.
 
+LICENSE
+-------
+Copyright © 2014-2016 The New York Times Company.
+Licensed under the Apache 2.0 License. See LICENSE for more information.
+
 Usage
 -----
 Rewrite the request URL so that the query string only contains parameter
@@ -59,7 +64,7 @@ Additional configuration variables and options can be found by invoking
 #### Query Arrays
 By default, libvmod-queryfilter assumes query parameters are individual
 name/value pairs (e.g. `a=1&b=2...`). Optional support for arrays in query
-parameters (e.g. `a[]=1&a[]=2...` - see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string) or [Issue #2](https://github.com/andrew-canaday/libvmod-queryfilter/issues/2))
+parameters (e.g. `a[]=1&a[]=2...` - see [this Stackoverflow Question](http://stackoverflow.com/questions/6243051/how-to-pass-an-array-within-a-query-string) or [Issue #2](https://github.com/NYTimes/libvmod-queryfilter/issues/2))
 can be enabled by passing the `--enable-query-arrays` at configure time. With
 this option enabled, array parameters will be preserved - in order - in the
 output URI.
@@ -72,12 +77,4 @@ Libvmod-queryfilter provides a set of simple unit tests driven by
 **varnishtest**. They can be executed as part of the build process by
 invoking `make check`.
 
-Notes
------
-Comprehensive VCC docs and m4 macro usage forthcoming.
-
-LICENSE
--------
-Copyright © 2014-2016 The New York Times Company.
-Licensed under the Apache 2.0 License. See LICENSE for more information.
 

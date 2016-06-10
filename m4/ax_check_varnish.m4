@@ -1,5 +1,5 @@
 # =============================================================================
-# https://github.com/andrew-canaday/libvmod-queryfilter/m4/ax_check_varnish.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_check_varnish.m4
 # =============================================================================
 #
 #
@@ -9,7 +9,14 @@
 # DESCRIPTION
 #   Ensure that we have everything necessary for Varnish vmod development.
 #
-#  Declares the following precious variables:
+#  Leverages the following macros:
+#   * AX_CHECK_VARNISHSRC
+#   * AX_CHECK_VMOD_DIR
+#   * AX_PROG_VMODTOOL
+#   * AX_PROG_VARNISHTEST
+#
+#
+#  Declares the following precious variables (via invoked functions):
 #   * VARNISHSRC - path to source directory
 #   * VARNISHTEST - path to varnishtest vtc runner
 #   * VMOD_DIR - path to vmod installation directory
@@ -40,7 +47,7 @@
 #   limitations under the License.
 # =============================================================================
 
-# serial 2
+# serial 3
 
 # AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ------------------------------------------------------------------
