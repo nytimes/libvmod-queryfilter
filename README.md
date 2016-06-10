@@ -20,6 +20,11 @@ to the VMOD, so by passing in parameter names in a consistent manner (e.g.,
 alphabetical order), a resulting filtered request URL will be unique for its
 combination of parameter names and values.
 
+LICENSE
+-------
+Copyright © 2014-2016 The New York Times Company.
+Licensed under the Apache 2.0 License. See LICENSE for more information.
+
 Usage
 -----
 Rewrite the request URL so that the query string only contains parameter
@@ -72,12 +77,4 @@ Libvmod-queryfilter provides a set of simple unit tests driven by
 **varnishtest**. They can be executed as part of the build process by
 invoking `make check`.
 
-Notes
------
-Comprehensive VCC docs and m4 macro usage forthcoming.
-
-LICENSE
--------
-Copyright © 2014-2016 The New York Times Company.
-Licensed under the Apache 2.0 License. See LICENSE for more information.
 
