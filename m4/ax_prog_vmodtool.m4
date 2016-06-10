@@ -1,5 +1,5 @@
 # =============================================================================
-# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_check_varnish.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_vmodtool.m4
 # =============================================================================
 #
 #
@@ -7,8 +7,9 @@
 #  AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   Set VMODTOOL to the absolute path to the Varnish Cache VMOD tool and
-#   execute ACTION-IF-FOUND, on success. On failure, invoke ACTION-IF-NOT-FOUND.
+#   Set the VMODTOOL output variable to the absolute path to the Varnish Cache
+#   VMOD tool and execute ACTION-IF-FOUND, on success. On failure, invoke
+#   ACTION-IF-NOT-FOUND.
 #
 #  Declares the following precious variables:
 #   * VMODTOOL - path to the vmod.py utility script used to generate certain

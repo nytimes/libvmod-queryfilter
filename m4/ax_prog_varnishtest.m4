@@ -1,5 +1,5 @@
 # =============================================================================
-# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_check_varnish.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_vmodtool.m4
 # =============================================================================
 #
 #
@@ -7,21 +7,12 @@
 #  AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#  Find and set the path to varnishtest.
+#   Set the VARNISHTEST output variable to the absolute path to the Varnish
+#   Cache VMOD tool and execute ACTION-IF-FOUND, on success. On failure, invoke
+#   ACTION-IF-NOT-FOUND.
 #
 #  Declares the following precious variables:
-#   * VARNISHSRC - path to source directory
 #   * VARNISHTEST - path to varnishtest vtc runner
-#   * VMOD_DIR - path to vmod installation directory
-#   * VMODTOOL - path to the vmod.py utility script used to generate certain
-#                auxiliary files (typically named vcc_if.c and vcc_if.h)
-#
-#  And performs the following actions:
-#    * Require VARNISHSRC to be set to the path to a Varnish source directory
-#    * If relative, convert VARNISHSRC to an absolute file path
-#    * Set the VMODTOOL output variable to the path to the vmod utility
-#    * If unset, set the VARNISHTEST output variable to the path to varnishtest
-#    * If unset, Set the VMOD_DIR output variable to the vmod installation dir
 #
 # LICENSE
 #
@@ -40,7 +31,7 @@
 #   limitations under the License.
 # =============================================================================
 
-# serial 2
+# serial 1
 
 # AX_PROG_VARNISHTEST([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
