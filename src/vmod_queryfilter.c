@@ -2,6 +2,7 @@
  * libvmod-queryfilter: Simple VMOD for filtering/sorting query strings
  *
  * Copyright 2016 The New York Times Company
+ * Modifications copyright 2017 Norsk Rikskringkasting AS
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,16 +41,13 @@ typedef struct sess req_ctx;
 #endif /* VARNISH_API_MAJOR == 4 */
 
 
-/* Convenience macro used to test parameters for match: */
-#define PARAM_IS_MATCH(param, filter_name) \
-    current->value && !strcmp(filter_name,current->name)
-
 /** Simple struct used for one-time query parameter tokenization.
  * Stores name and value and serves as the node-type for a crude linked list.
  */
 typedef struct query_param {
     char* name;
     char* value;
+    long flag;
     struct query_param* next;
 } query_param_t;
 
@@ -100,6 +98,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
         param->name = param_str;
         param->value = strchr(param_str,'=');
         param->next = NULL;
+        param->flag = 0;
         if( param->value ) {
             *(param->value++) = '\0';
             if( *(param->value) == '\0' ) {
@@ -107,6 +106,7 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
             };
         }
         else {
+            param->flag = 1;
             param->value = NULL;
         };
 
@@ -229,7 +229,7 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
     {
         for(current = head; current != NULL; current=current->next)
         {
-            if(PARAM_IS_MATCH(current, filter_name)) {
+            if(current->value && !strcmp(filter_name,current->name)) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
@@ -241,6 +241,10 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
 #if !VMOD_QUERYFILTER_ARRAYS_ENABLED
                 break;
 #endif /* VMOD_QUERYFILTER_ARRAYS_ENABLED */
+            } else if (current->flag && !strcmp(filter_name,current->name)) {
+                new_uri_end += sprintf(new_uri_end, "%c%s",
+                    params_seen++ > 0 ? '&' : '?',
+                    current->name);
             };
         };
     };
