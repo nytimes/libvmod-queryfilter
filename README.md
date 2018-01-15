@@ -23,7 +23,11 @@ combination of parameter names and values.
 LICENSE
 -------
 Copyright © 2014-2018 The New York Times Company.
-Licensed under the Apache 2.0 License. See LICENSE for more information.
+Licensed under the Apache 2.0 License. See [LICENSE](./LICENSE) for more information.
+
+See the [NOTICE](./NOTICE) file for a list of contributors.
+
+(To list individual developers, try `git shortlog -s` or [this page](https://github.com/NYTimes/libvmod-queryfilter/graphs/contributors)).
 
 Usage
 -----
@@ -36,11 +40,7 @@ name/value pairs for the "id" and "q" parameters:
 Building
 --------
 Libvmod-queryfilter attempts to be 100% C99 conformant. You should, therefore,
-be able to build it without issue on most major compilers. However, it has only
-been thorougly tested with the following compilers and targets:
- * gcc-4.4.7 (CentOS release 6.5 x86_64)
- * gcc-4.9.2p1 (x86_64-apple-darwin13.4.0)
- * clang-600.0.57 (x86_64-apple-darwin13.4.0)
+be able to build it without issue on most major compilers.
 
 ### Setup
 Before anything else is done, your source directory has to be initialized:
@@ -55,7 +55,7 @@ tree. The path to the Varnish Cache source tree is specified via the
 *VARNISHSRC* variable at configure time, e.g.:
 
 ```Shell
-./configure VARNISHSRC=path/to/varnish-M.m.p && make check
+./configure VARNISHSRC=path/to/varnish-M.m.p && make && make check
 ```
 
 Additional configuration variables and options can be found by invoking
