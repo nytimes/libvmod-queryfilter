@@ -32,7 +32,7 @@
 #
 # LICENSE
 #
-#   Copyright 2014-2016 The New York Times Company
+#   Copyright © 2014-2018 The New York Times Company
 #   
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -54,19 +54,22 @@
 AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
     # Ensure we have/know everything we need for vmod development:
     # - Check that VARNISHSRC is set and is a directory we can access
+    # - Determine varnish cache API version
     # - Determine the path to varnishtest
     # - Check vmod installation directory
     # - Find the vmod tool (vmod.py or vmodtool.py) - this effectively
     #   also determines the Varnish Cache major version
     AX_CHECK_VARNISHSRC([
-        AX_PROG_VARNISHTEST([
-            AX_CHECK_VMOD_DIR([
-                AX_PROG_VMODTOOL
-            ])
-        ])
-    ])
+        AX_CHECK_VARNISH_VERSION([
+            AX_PROG_VARNISHTEST([
+                AX_CHECK_VMOD_DIR([
+                    AX_PROG_VMODTOOL
+                ], [$2])
+            ], [$2])
+        ], [$2])
+    ], [$2])
 
-    AS_IF([test "x$VARNISH_API_MAJOR" != "x"],[$1],[$2])
+    AS_IF([test "x$VARNISH_API_VERSION" != "x"],[$1])
 ])
 
 ## EOF

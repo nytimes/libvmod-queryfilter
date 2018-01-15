@@ -9,7 +9,7 @@
 #           Init:
 #-----------------------------
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright (c) 2016 The New York Times Company])
+AC_COPYRIGHT([Copyright 2014-2018 The New York Times Company])
 AC_INIT([libvmod-queryfilter], [0.2.1],
         [code@nytimes.com],[libvmod-queryfilter],
         [https://github.com/NYTimes/libvmod-queryfilter])
@@ -100,9 +100,10 @@ AC_DEFINE_UNQUOTED(
     [$VARNISH_API_MAJOR],
     [Varnish API major version])
 
-
 AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
 AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
+AM_CONDITIONAL([VARNISHSRC_5_X],[test "x$VARNISH_API_MAJOR" = "x5"])
+
 
 #-----------------------------
 #    Configuration Options:

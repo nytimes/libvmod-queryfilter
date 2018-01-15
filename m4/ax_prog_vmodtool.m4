@@ -17,7 +17,7 @@
 #
 # LICENSE
 #
-#   Copyright 2014-2016 The New York Times Company
+#   Copyright © 2014-2018 The New York Times Company
 #   
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -43,14 +43,12 @@ AC_DEFUN([AX_PROG_VMODTOOL],[
     vmodtool_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
     AC_CHECK_FILE([$vmodtool_path],[
         AC_SUBST([VMODTOOL],[$vmodtool_path])
-        AC_SUBST([VARNISH_API_MAJOR],[4])
         $1
     ],[
         # Check for vmod.py (varnish 3.x):
         vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
         AC_CHECK_FILE([$vmod_py_path],[
             AC_SUBST([VMODTOOL],[$vmod_py_path])
-            AC_SUBST([VARNISH_API_MAJOR],[3])
             $1
         ],[
             $2

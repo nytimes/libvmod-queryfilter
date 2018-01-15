@@ -1,7 +1,7 @@
 /*=============================================================================
  * libvmod-queryfilter: Simple VMOD for filtering/sorting query strings
  *
- * Copyright 2016 The New York Times Company
+ * Copyright © 2014-2018 The New York Times Company
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,17 @@
 #include "vrt.h"
 #include "vcc_if.h"
 
-/* Varnish 4.x */
-#if VARNISH_API_MAJOR == 4
+/* Varnish 3.x: */
+#if VARNISH_API_MAJOR == 3
+#include "cache.h"
+typedef struct sess req_ctx;
+#else
+
+/* Varnish 4.x and 5.x */
 #include "vre.h"
 #include "cache/cache.h"
 typedef const struct vrt_ctx req_ctx;
-
-/* Varnish 3.x: */
-#elif VARNISH_API_MAJOR == 3
-#include "cache.h"
-typedef struct sess req_ctx;
-
-#endif /* VARNISH_API_MAJOR == 4 */
+#endif /* VARNISH_API_MAJOR == 3 */
 
 
 /* Convenience macro used to test parameters for match: */

@@ -22,7 +22,7 @@ combination of parameter names and values.
 
 LICENSE
 -------
-Copyright © 2014-2016 The New York Times Company.
+Copyright © 2014-2018 The New York Times Company.
 Licensed under the Apache 2.0 License. See LICENSE for more information.
 
 Usage
@@ -50,7 +50,7 @@ Before anything else is done, your source directory has to be initialized:
 ```
 
 ### Configuration
-This vmod must be compiled against a pre-built Varnish Cache 3.x/4.x source
+This vmod must be compiled against a pre-built Varnish Cache 3.x/4.x/5.x source
 tree. The path to the Varnish Cache source tree is specified via the
 *VARNISHSRC* variable at configure time, e.g.:
 
