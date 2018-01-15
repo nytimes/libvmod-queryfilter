@@ -227,7 +227,11 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
     {
         for(current = head; current != NULL; current=current->next)
         {
-            if(current->value && !strcmp(filter_name,current->name)) {
+            if(strcmp(filter_name, current->name)) {
+                continue;
+            };
+
+            if(current->value) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name, current->value);
@@ -239,7 +243,7 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
 #if !VMOD_QUERYFILTER_ARRAYS_ENABLED
                 break;
 #endif /* VMOD_QUERYFILTER_ARRAYS_ENABLED */
-            } else if (current->flag && !strcmp(filter_name,current->name)) {
+            } else if (current->flag) {
                 new_uri_end += sprintf(new_uri_end, "%c%s",
                     params_seen++ > 0 ? '&' : '?',
                     current->name);
