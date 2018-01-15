@@ -3,6 +3,10 @@ varnishtest "Test for memory issues related to missing param values"
 server s1 {
        rxreq
        txresp
+       rxreq
+       txresp
+       rxreq
+       txresp
 } -start
 
 varnish v1 -vcl+backend {
@@ -37,6 +41,6 @@ varnish v1 -expect cache_hit == 0
 client c1 -run
 delay .1
 
-varnish v1 -expect n_object == 1
-varnish v1 -expect cache_miss == 1
-varnish v1 -expect cache_hit == 2
+varnish v1 -expect n_object == 3
+varnish v1 -expect cache_miss == 3
+varnish v1 -expect cache_hit == 0
