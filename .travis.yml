@@ -1,0 +1,18 @@
+language: ruby
+dist: trusty
+
+matrix:
+  include:
+    - rvm: 2.3
+      env: suite=centos-69
+#    - rvm: 2.3
+#      env: suite=debian-8
+
+sudo: required
+services: docker
+
+before_script:
+  - gem install bundler
+  - bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --retry=3
+
+script: bundle exec kitchen test "$suite"

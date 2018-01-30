@@ -1,0 +1,46 @@
+---
+driver:
+  name: docker
+  privileged: true
+  use_sudo: false
+  # Share the code into the Kitchen Container
+  volume:
+    - $(pwd):/vmod-queryfilter
+
+platforms:
+  - name: centos-6.9
+    provisioner:
+      script: .build/centos6.sh
+    driver_config:
+      provision_command:
+        # Update & install epel-release & yum-utils
+        - yum update -y
+        - yum install epel-release -y
+        - yum install pygpgme yum-utils wget python-docutils ncurses-devel pcre-devel libedit-devel -y
+        # Install build tools
+        - yum groupinstall 'Development Tools' -y
+
+  - name: debian-8
+    provisioner:
+      script: .build/debian8.sh
+    driver_config:
+      image: debian:8
+      provision_command:
+        # Update & install require packages
+        - apt-get update && apt-get upgrade -y
+        - apt-get install curl gnupg apt-transport-https debian-archive-keyring -y
+        # Install build tools
+        - apt-get install build-essential autotools-dev libtool automake -y
+
+
+provisioner:
+  name: shell
+
+verifier:
+  name: inspec
+
+suites:
+  - name: centos
+    excludes: ["debian-8"]
+  - name: debian
+    excludes: ["centos-6.9"]

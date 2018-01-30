@@ -50,3 +50,9 @@ vmod_queryfilter.3
 
 # Things not to ignore
 !m4/ax_*
+
+# Kitchen CI
+.bundle/
+.kitchen/
+vendor/
+Gemfile.lock
