@@ -92,14 +92,21 @@ AC_CHECK_FUNCS([strchr])
 #-----------------------------
 #           Varnish:
 #-----------------------------
-AX_CHECK_VARNISH_VMOD_DEV([],[
-    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
-])
+PKG_CHECK_VAR([VARNISH_PREFIX], [varnishapi], [prefix])
+PKG_CHECK_VAR([VARNISH_BINDIR], [varnishapi], [bindir])
+PKG_CHECK_VAR([VARNISH_SBINDIR], [varnishapi], [sbindir])
+PKG_CHECK_VAR([VARNISH_DATAROOT], [varnishapi], [datarootdir])
+
+VARNISH_VMOD_INCLUDES
+VARNISH_VMOD_DIR
+VARNISH_VMODTOOL
+
+AC_SUBST([VARNISH_API_MAJOR],[4])
+
 AC_DEFINE_UNQUOTED(
     [VARNISH_API_MAJOR],
     [$VARNISH_API_MAJOR],
     [Varnish API major version])
-
 
 AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
 AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])

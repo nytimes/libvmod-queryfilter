@@ -5,6 +5,7 @@
 #=============================================================================
 
 AM_CPPFLAGS = \
+    $(VMOD_INCLUDES) \
     -I@VARNISHSRC@/include \
     -I@VARNISHSRC@/bin/varnishd \
     -I@VARNISHSRC@ \
@@ -30,7 +31,10 @@ vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter.vcc
 endif
 
 if VARNISHSRC_4_X
-vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter4.vcc
+config.h: ../vmod_queryfilter_config.h
+	cp ../vmod_queryfilter_config.h config.h
+
+vcc_if.c vcc_if.h: @top_srcdir@/src/vmod_queryfilter4.vcc config.h
 	@PYTHON@ @VMODTOOL@ @top_srcdir@/src/vmod_queryfilter4.vcc
 endif
 
