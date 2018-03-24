@@ -92,7 +92,9 @@ AC_CHECK_FUNCS([strchr])
 #-----------------------------
 #           Varnish:
 #-----------------------------
-AX_CHECK_VARNISH_VMOD_DEV([],[
+AX_CHECK_VARNISH_VMOD_DEV([
+    AC_MSG_NOTICE(["$VARNISHSRC build root valid."])
+],[
     AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
 ])
 AC_DEFINE_UNQUOTED(

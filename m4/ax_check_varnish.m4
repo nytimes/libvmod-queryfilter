@@ -63,13 +63,11 @@ AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
         AX_CHECK_VARNISH_VERSION([
             AX_PROG_VARNISHTEST([
                 AX_CHECK_VMOD_DIR([
-                    AX_PROG_VMODTOOL
+                    AX_PROG_VMODTOOL([$1],[$2])
                 ], [$2])
             ], [$2])
         ], [$2])
     ], [$2])
-
-    AS_IF([test "x$VARNISH_API_VERSION" != "x"],[$1])
 ])
 
 ## EOF
