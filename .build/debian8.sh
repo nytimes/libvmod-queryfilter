@@ -16,5 +16,5 @@ apt-get update -y
 apt-get install varnish varnish-dev -y --force-yes
 
 ./autogen.sh
-./configure VARNISHSRC=/usr/include/varnish/
+./configure --enable-query-arrays VARNISHSRC=/usr/include/varnish/
 make

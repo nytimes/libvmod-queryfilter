@@ -21,15 +21,40 @@ yum install varnish -y
 # Varnish version installed
 VERSION=$(rpm --queryformat "%{VERSION}" -q varnish)
 
+# Grab the source for the Varnish version installed
 wget "https://github.com/varnishcache/varnish-cache/archive/varnish-$VERSION.tar.gz"
 tar -xzf "varnish-$VERSION.tar.gz"
 
+# Build the source
 cd "varnish-cache-varnish-$VERSION"
 export VARNISHSRC=$(pwd)
 ./autogen.sh && ./configure && make
 
 cd ..
 
+# Build the vmod
 ./autogen.sh
 ./configure VARNISHSRC=$VARNISHSRC
 make
+make install
+
+# Copy the vmod to where CentOS 6.x wants it
+cp -R /usr/local/lib/varnish/vmods/* /usr/lib64/varnish/vmods/.
+
+# Add a varnish file configured to use the plugin
+cat << EOF > /etc/varnish/default.vcl
+vcl 4.0;
+
+import queryfilter;
+
+backend default {
+    .host = "127.0.0.1";
+    .port = "8080";
+}
+
+sub vcl_recv {
+    set req.url = queryfilter.filterparams(req.url, "id,q");
+}
+EOF
+
+service varnish start
