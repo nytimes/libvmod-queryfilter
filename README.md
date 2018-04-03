@@ -1,6 +1,12 @@
 libvmod-queryfilter
 ===================
 
+Travis
+-------
+
+[![Build Status](https://travis-ci.org/gsdevme/libvmod-queryfilter.svg?branch=master)](https://travis-ci.org/gsdevme/libvmod-queryfilter)
+
+
 Overview
 --------
 This is a simple VMOD for [Varnish Cache](https://www.varnish-cache.org/) which
