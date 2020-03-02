@@ -37,11 +37,13 @@
 AC_DEFUN([AX_CHECK_VARNISHSRC],[
     AC_ARG_VAR([VARNISHSRC],[path to Varnish source tree (mandatory)])
 
-    # Locate the varnish source tree
-    AS_IF([test "x$VARNISHSRC" != "x" -a -d "$VARNISHSRC"],[
+    AC_MSG_CHECKING([verifying VARNISHSRC exists and is built])
+    AS_IF([test -d "$VARNISHSRC"],[
         VARNISHSRC=[$(cd $VARNISHSRC && pwd)]
+        AC_MSG_RESULT([$VARNISHSRC])
         $1
     ],[
+        AC_MSG_RESULT([no])
         $2
     ])
 ])

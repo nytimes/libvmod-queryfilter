@@ -1,19 +1,18 @@
 # =============================================================================
-# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_vmodtool.m4
+# https://github.com/NYTimes/libvmod-queryfilter/m4/ax_prog_varnishd.m4
 # =============================================================================
 #
 #
 # SYNOPSIS
-#  AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+#  AX_PROG_VARNISHD([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 #
 # DESCRIPTION
-#   Set the VMODTOOL output variable to the absolute path to the Varnish Cache
-#   VMOD tool and execute ACTION-IF-FOUND, on success. On failure, invoke
+#   Set the VARNISHD output variable to the absolute path to the Varnish
+#   Cache VMOD tool and execute ACTION-IF-FOUND, on success. On failure, invoke
 #   ACTION-IF-NOT-FOUND.
 #
 #  Declares the following precious variables:
-#   * VMODTOOL - path to the vmod.py utility script used to generate certain
-#                auxiliary files (typically named vcc_if.c and vcc_if.h)
+#   * VARNISHD - path to varnishd vtc runner
 #
 # LICENSE
 #
@@ -34,27 +33,23 @@
 
 # serial 1
 
-# AX_PROG_VMODTOOL([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# AX_PROG_VARNISHD([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ---------------------------------------------------------------
-AC_DEFUN([AX_PROG_VMODTOOL],[
-    AC_ARG_VAR([VMODTOOL], [Path to varnish vmod tool])
+AC_DEFUN([AX_PROG_VARNISHD],[
+    AC_ARG_VAR([VARNISHD],[path to varnishd (optional)])
 
-    # Check for vmodtool.py (varnish 4.x):
-    vmodtool_path=[$VARNISHSRC/lib/libvcc/vmodtool.py]
-    AC_CHECK_FILE([$vmodtool_path],[
-        AC_SUBST([VMODTOOL],[$vmodtool_path])
-        $1
+    # Check that varnishd is built and in the varnish source directory:
+    AS_IF([test "x$VARNISHSRC" != "x"],[
+        _varnishd_basepath="$VARNISHSRC/bin/varnishd"
     ],[
-        # Check for vmod.py (varnish 3.x):
-        vmod_py_path=[$VARNISHSRC/lib/libvmod_std/vmod.py]
-        AC_CHECK_FILE([$vmod_py_path],[
-            AC_SUBST([VMODTOOL],[$vmod_py_path])
-            $1
-        ],[
-            $2
-        ])
+        PKG_CHECK_VAR([VARNISH_SBINDIR],[varnishapi],[sbindir],[
+            _varnishd_basepath="$VARNISH_SBINDIR"
+            ],[$2])
     ])
+    AC_PATH_PROG([VARNISHD],[varnishd],[],[$_varnishd_basepath])
+    AC_SUBST([VARNISHD_PATH],[$_varnishd_basepath])
+    AS_IF([test "x$VARNISHD" != "x"],[$1],[$2])
 ])
 
-
+## EOF
 

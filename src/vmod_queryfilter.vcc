@@ -1,7 +1,7 @@
 #==============================================================================
 # libvmod-queryfilter: Simple VMOD for filtering/sorting query strings
 #
-# Copyright © 2014-2018 The New York Times Company
+# Copyright © 2014-2020 The New York Times Company
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ DESCRIPTION
 `queryfilter` a simple VMOD for [Varnish Cache](https://www.varnish-cache.org/)
 which provides query string filtering.
 
-$Function STRING filterparams(STRING, STRING)
+$Function STRING filterparams(STRING, STRING, BOOL)
 
 Description
     It accepts a whitelist of parameter names and returns the request URL with

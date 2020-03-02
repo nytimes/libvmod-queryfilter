@@ -9,7 +9,7 @@
 #           Init:
 #-----------------------------
 AC_PREREQ(2.59)
-AC_COPYRIGHT([Copyright 2014-2018 The New York Times Company])
+AC_COPYRIGHT([Copyright 2014-2020 The New York Times Company])
 AC_INIT([libvmod-queryfilter], [0.2.3],
         [code@nytimes.com],[libvmod-queryfilter],
         [https://github.com/NYTimes/libvmod-queryfilter])
@@ -65,10 +65,9 @@ AM_CONDITIONAL([HAVE_MD2MAN], [test "x$MD2MAN" != "xno"])
 PKG_PROG_PKG_CONFIG
 
 # Check for python
-AC_CHECK_PROGS(PYTHON,
+AC_CHECK_PROGS([PYTHON],
 	[python3 python3.1 python3.2 python2.7 python2.6 python2.5 python2 python],
-	[AC_MSG_ERROR(
-        [Python is needed to build this vmod. Please install python.])
+	[AC_MSG_ERROR([Python is needed to build this vmod. Please install python.])
 	])
 
 #-----------------------------
@@ -93,10 +92,11 @@ AC_CHECK_FUNCS([strchr])
 #           Varnish:
 #-----------------------------
 AX_CHECK_VARNISH_VMOD_DEV([
-    AC_MSG_NOTICE(["$VARNISHSRC build root valid."])
+    AC_MSG_NOTICE([Varnish build environment okay.])
 ],[
-    AC_MSG_ERROR(["$VARNISHSRC missing or not built."])
+   AC_MSG_ERROR([Unable to find required Varnish build environment.])
 ])
+
 AC_DEFINE_UNQUOTED(
     [VARNISH_API_MAJOR],
     [$VARNISH_API_MAJOR],
@@ -108,30 +108,9 @@ AM_CONDITIONAL([VARNISHSRC_5_X],[test "x$VARNISH_API_MAJOR" = "x5"])
 
 
 #-----------------------------
-#    Configuration Options:
-#-----------------------------
-# Check for query-arrays:
-AC_ARG_ENABLE([query-arrays],
-    AS_HELP_STRING(
-        [--enable-query-arrays],
-        [Turn verbose assertions on for tests]))
-
-# If set, extend CFLAGS with verbose assertions
-AS_IF([test "x$enable_query_arrays" = "xyes"],[
-    vmod_queryfilter_arrays_enabled=1
-],[
-    vmod_queryfilter_arrays_enabled=0
-])
-
-AC_DEFINE_UNQUOTED(
-    [VMOD_QUERYFILTER_ARRAYS_ENABLED],
-    [$vmod_queryfilter_arrays_enabled],
-    [If true, permit php-style query array parameters])
-
-#-----------------------------
 #          Output:
 #-----------------------------
-AC_CONFIG_HEADERS(vmod_queryfilter_config.h)
+AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile

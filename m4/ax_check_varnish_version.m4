@@ -41,16 +41,25 @@ AC_DEFUN([AX_CHECK_VARNISH_VERSION],[
 
     # If not explicitly set, attempt to determine varnish version via pkg-config
     AS_IF([test "x$VARNISH_VERSION" = "x"],[
-        _varnish_version=`PKG_CONFIG_PATH="${VARNISHSRC}:${PKG_CONFIG_PATH}" $PKG_CONFIG varnishapi --modversion`
+        _varnish_version=`$PKG_CONFIG varnishapi --modversion`
         AS_IF([test "x$_varnish_version" != "x"],[
             AC_MSG_RESULT([$_varnish_version])
             AC_SUBST([VARNISH_VERSION],[$_varnish_version])
             AC_SUBST([VARNISH_API_MAJOR],[${_varnish_version%%.*}])
+
+            # TODO: Varnish v3.x doesn't make vmod tool available as part of the
+            # install. Warn the user here, or see if the vars are set first?
             $1
         ],[
             AC_MSG_RESULT([not found])
             $2
         ])
+    ],[
+        _varnish_version="$VARNISH_VERSION"
+        AC_MSG_RESULT([$_varnish_version])
+        AC_SUBST([VARNISH_VERSION],[$_varnish_version])
+        AC_SUBST([VARNISH_API_MAJOR],[${_varnish_version%%.*}])
+        $1
     ])
 ])
 

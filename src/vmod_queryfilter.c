@@ -1,7 +1,7 @@
 /*=============================================================================
  * libvmod-queryfilter: Simple VMOD for filtering/sorting query strings
  *
- * Copyright © 2014-2018 The New York Times Company
+ * Copyright © 2014-2020 The New York Times Company
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,67 +17,81 @@
  * 
  *===========================================================================*/
 
-#include "vmod_queryfilter_config.h"
+#include "config.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+/*--- Varnish 3.x: ---*/
+#if VARNISH_API_MAJOR == 3
 #include "vrt.h"
 #include "vcc_if.h"
-
-/* Varnish 3.x: */
-#if VARNISH_API_MAJOR == 3
 #include "cache.h"
 typedef struct sess req_ctx;
-#else
+#endif /* VARNISH_API_MAJOR == 3 */
 
-/* Varnish 4.x and 5.x */
+/*--- Varnish 4.x and 5.x ---*/
+#if (VARNISH_API_MAJOR == 4 || VARNISH_API_MAJOR == 5 )
+#include "vrt.h"
+#include "vcc_if.h"
 #include "vre.h"
 #include "cache/cache.h"
 typedef const struct vrt_ctx req_ctx;
-#endif /* VARNISH_API_MAJOR == 3 */
+#endif /* (VARNISH_API_MAJOR == 4 || VARNISH_API_MAJOR == 5 ) */
+
+/*--- Varnish 6.x ---*/
+#if VARNISH_API_MAJOR == 6
+#include "cache/cache.h"
+#include "vcl.h"
+#include "vre.h"
+#include "vas.h"
+#include "vsb.h"
+//#include "vdef.h"
+//#include "vrt.h"
+#include "vcc_if.h"
+typedef const struct vrt_ctx req_ctx;
+#endif /* VARNISH_API_MAJOR == 6 */
 
 
-/** Simple struct used for one-time query parameter tokenization.
- * Stores name and value and serves as the node-type for a crude linked list.
- */
+/** Alignment macros ala varnish internals: */
+#define PALIGN_SIZE     (sizeof(void*))
+#define PALIGN_DELTA(p) (PALIGN_SIZE - (((uintptr_t)p) % PALIGN_SIZE))
+
+/** Simple struct used for one-time query parameter tokenization. */
 typedef struct query_param {
     char* name;
     char* value;
-    long flag;
-    struct query_param* next;
 } query_param_t;
 
 /** Query string tokenizer. This function takes a query string as input, and
- * yields a linked list of name/value pairs. Allocation happens inside the
+ * yields array of name/value pairs. Allocation happens inside the
  * reserved workspace, pointed to by *ws_free. On error, no space is consumed.
  *
+ * @param result pointer to query_param_t* at the head of the array
  * @param ws_free pointer to char* at the head of the reserved workspace
  * @param ws_remain the amount of reserved workspace remaining, in bytes
- * @return on success the pointer to the head of the list; NULL on failure
- *
- * @TODO alignment for query_param_t structs!
+ * @return the number of non-empty query params or -1 on OOM
  */
-static query_param_t*
-tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
+static int
+tokenize_querystring(query_param_t** result, char** ws_free, unsigned* remain, char* query_str)
 {
+    int no_param = 0;
     char* save_ptr;
     char* param_str;
-    char* ws_free_temp = *ws_free; /* Temporary copy of workspace head */
-    unsigned remain_temp = *remain; /* Temporary allocation counter */
+
+    /* Temporary copies of workspace head + allocation counter: */
+    char* ws_free_temp = *ws_free;
+    unsigned remain_temp = *remain;
     query_param_t* head = NULL;
-    query_param_t* tail = NULL;
 
     /* Move the free pointer up so that query_param_t objects allocated on
      * WS storage are properly aligned: */
-    size_t align_remain = (size_t)ws_free_temp % sizeof(char*);
-    if( align_remain ) {
-        ws_free_temp += (sizeof(char*) - align_remain);
-        remain_temp -= (sizeof(char*) - align_remain);
-    };
+    unsigned align_adjust = PALIGN_DELTA(ws_free_temp);
+    ws_free_temp += align_adjust;
+    remain_temp -= align_adjust;
 
-    /* Tokenize the query parameters into a linked list: */
+    /* Tokenize the query parameters into an array: */
     for(param_str = strtok_r(query_str, "&", &save_ptr); param_str;
         param_str = strtok_r(NULL, "&", &save_ptr))
     {
@@ -85,41 +99,38 @@ tokenize_querystring(char** ws_free, unsigned* remain, char* query_str)
          * Note that in this case, we don't update ws_free or remain so that
          * the space we've consumed thus far is returned to the workspace. */
         if( remain_temp < sizeof(query_param_t) ) {
-            return NULL;
+            (*result) = NULL;
+            return -1;
         };
 
         /* "Allocate" space at the head of the workspace and place a node: */
         query_param_t* param = (query_param_t*)ws_free_temp;
-        remain_temp -= sizeof(query_param_t);
-        ws_free_temp += sizeof(query_param_t);
-
         param->name = param_str;
+        /* TODO: will varnish filter malformed queries, e.g.: "?=&"? 
+         * Else: this needs some more rigor:
+         */
         param->value = strchr(param_str,'=');
-        param->next = NULL;
-        param->flag = 0;
         if( param->value ) {
             *(param->value++) = '\0';
             if( *(param->value) == '\0' ) {
-                param->value = NULL;
+                /* If there is no value, omit the param by jumping
+                 * to the next item without committing our allocation: */
+                continue;
             };
-        }
-        else {
-            param->flag = 1;
-            param->value = NULL;
         };
 
-        if( tail ) {
-            tail->next = param;
-            tail = param;
-        }
-        else {
-            head = tail = param;
+        if( !head ) {
+            head = param;
         };
+        remain_temp -= sizeof(query_param_t);
+        ws_free_temp += sizeof(query_param_t);
+        no_param++;
     };
 
+    (*result) = head;
     (*ws_free) = ws_free_temp;
     (*remain) = remain_temp;
-    return head;
+    return no_param;
 }
 
 /* Hacky workspace string copy. We pray for inline. ;)
@@ -147,7 +158,7 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
  * Notes:
  * 1. We copy the URI as working space for the output URI, assuming that the
  *    filtered URI will always be less than or equal to the input URI size.
- * 2. Tokenize the querystring *once* and store it as a linked list
+ * 2. Tokenize the querystring *once* and store it as an array
  * 3. Tokenize and iterate over the input parameters, copying matching query
  *    parameters to the end of our allocated space; the terms end up sorted
  *    as a byproduct.
@@ -160,24 +171,32 @@ strtmp_append(char** ws_free, unsigned* remain, const char* str_in)
  * @return filtered URI on success; NULL on failure
  */
 const char*
-vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
+vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned arrays_enabled)
 {
     char* saveptr;
-    char* new_uri = NULL;
+    char* new_uri;
     char* new_uri_end;
     char* query_str;
     char* params;
     char* ws_free;
-    unsigned ws_remain;
     struct ws* workspace = sp->ws;
-    query_param_t* head = NULL;
+    query_param_t* head;
     query_param_t* current;
     const char* filter_name;
-    int params_seen = 0;
+    int i;
+    int no_param;
+    unsigned ws_remain;
+    char sep = '?';
+
+    /* Right off, do nothing if there's no query string: */
+    query_str = strchr(uri, '?');
+    if( query_str == NULL ) {
+        return uri;
+    }
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
-     * all of it in the end ;) */
-    ws_remain = WS_Reserve(workspace, 0); /* Reserve some work space */
+     * almost all of it in the end ;) */
+    ws_remain = WS_Reserve(workspace, 0);
     ws_free = workspace->f;
 
     /* Duplicate the URI, bailing on OOM: */
@@ -186,26 +205,20 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
         goto release_bail;
     };
 
-    /* Find the query string, if present: */
-    query_str = strchr(new_uri, '?');
-    if( query_str == NULL ) {
-        new_uri_end = new_uri + strlen(uri);
+    /* Terminate the URI at the beginning of the query string: */
+    new_uri_end = new_uri + (query_str - uri);
+    *new_uri_end = '\0';
+    query_str = new_uri_end+1;
+
+    /* If there are no query params, return the sanitized URI: */
+    if( *query_str == '\0' ) {
         goto release_okay;
     };
-
-    /* Terminate the existing URI at the beginning of the query string: */
-    new_uri_end = query_str;
-    *(query_str++) = '\0';
 
     /* Copy the query string to the head of the workspace: */
     query_str = strtmp_append(&ws_free, &ws_remain, query_str);
     if( !query_str ) {
         goto release_bail;
-    };
-
-    /* If there's no query params, return the truncated URI: */
-    if( *query_str == '\0' ) {
-        goto release_okay;
     };
 
     /* Copy the params to the head of the workspace: */
@@ -215,9 +228,15 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
     };
 
     /* Now, tokenize the query string and copy only matching params: */
-    head = tokenize_querystring(&ws_free, &ws_remain, query_str);
-    if( !head ) {
+    no_param = tokenize_querystring(&head, &ws_free, &ws_remain, query_str);
+    /* If we ran out of memory. Bail out. */
+    if( no_param < 0 ) {
         goto release_bail;
+    };
+
+    /* If we only had empty tokens (e.g. "?a=&b=") we're done! */
+    if( no_param == 0 ) {
+        goto release_okay;
     };
 
     /* Iterate over the list of parameters, looking for matches and appending
@@ -225,7 +244,7 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
     for(filter_name = strtok_r(params, ",", &saveptr); filter_name;
         filter_name = strtok_r(NULL, ",", &saveptr))
     {
-        for(current = head; current != NULL; current=current->next)
+        for(i=0, current=head; i<no_param; ++i, ++current)
         {
             if(strcmp(filter_name, current->name)) {
                 continue;
@@ -233,21 +252,24 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in)
 
             if(current->value) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
-                    params_seen++ > 0 ? '&' : '?',
-                    current->name, current->value);
+                    sep, current->name, current->value);
 /* If arrays are not enabled (default), we just break after the first match
  * to avoid unnecessary checks. However, for arrays it is necessary to keep
  * iterating through the list to find additional matches. A side effect of this
  * is that all elements of a given array will be rewritten in sequence next to
  * each other in the output array: */
-#if !VMOD_QUERYFILTER_ARRAYS_ENABLED
-                break;
-#endif /* VMOD_QUERYFILTER_ARRAYS_ENABLED */
-            } else if (current->flag) {
+                if( !arrays_enabled ) {
+                    break;
+                }
+            } else {
+                /* Empty params have been excluded, so this
+                 * is a flag-style query param: */
                 new_uri_end += sprintf(new_uri_end, "%c%s",
-                    params_seen++ > 0 ? '&' : '?',
-                    current->name);
+                    sep, current->name);
             };
+
+            /* After the first param, swap the separator: */
+            sep = '&';
         };
     };
 

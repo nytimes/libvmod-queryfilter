@@ -12,7 +12,7 @@
 #  Leverages the following macros:
 #   * AX_CHECK_VARNISHSRC
 #   * AX_CHECK_VMOD_DIR
-#   * AX_PROG_VMODTOOL
+#   * AX_CHECK_VMODTOOL
 #   * AX_PROG_VARNISHTEST
 #
 #
@@ -49,25 +49,61 @@
 
 # serial 3
 
-# AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# AX_CHECK_VARNISH_VMOD_REQ([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
 # ------------------------------------------------------------------
-AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
-    # Ensure we have/know everything we need for vmod development:
-    # - Check that VARNISHSRC is set and is a directory we can access
-    # - Determine varnish cache API version
-    # - Determine the path to varnishtest
-    # - Check vmod installation directory
-    # - Find the vmod tool (vmod.py or vmodtool.py) - this effectively
-    #   also determines the Varnish Cache major version
-    AX_CHECK_VARNISHSRC([
-        AX_CHECK_VARNISH_VERSION([
+# Required to build:
+# - Determine varnish API major version:
+#   - VARNISHSRC_3_x, VARNISH_4_x, or VARNISH_5_x AM conditional to be set
+# - Determine paths to:
+#   - @VARNISHD@
+#   - @VARNISHTEST@
+#   - @VARNISH_VMODDIR@
+#   - @VMODTOOL@ / @VARNISH_VMODTOOL@
+AC_DEFUN([AX_CHECK_VARNISH_VMOD_REQ],[
+    AX_CHECK_VARNISH_VERSION([
+        AX_PROG_VARNISHD([
             AX_PROG_VARNISHTEST([
-                AX_CHECK_VMOD_DIR([
-                    AX_PROG_VMODTOOL([$1],[$2])
+                PKG_CHECK_VAR([VARNISH_VMODDIR],[varnishapi],[vmoddir],[
+                    AX_CHECK_VMODTOOL([$1],[$2])
                 ], [$2])
             ], [$2])
-        ], [$2])
+        ],[$2])
     ], [$2])
+])
+
+# AX_CHECK_VARNISH_VMOD_DEV([ACTION-IF-FOUND],[ACTION-IF-NOT-FOUND])
+# ------------------------------------------------------------------
+# - If $VARNISHSRC:
+#   - Confirmed VARNISHSRC exists and is built
+#   - Set VARNISH_CFLAGS / VARNISH_LIBS
+#   - Run common config
+# - Else:
+#   - Load "varnishapi.pc" pkg-config file or bail
+#   - Run common config
+#
+# - Set required flags:
+#   - @VARNISH_CFLAGS@
+#   - @VARNISH_LIBS@
+# ------------------------------------------------------------------
+AC_DEFUN([AX_CHECK_VARNISH_VMOD_DEV],[
+    AC_MSG_CHECKING([to see if VARNISHSRC set])
+    AS_IF([test "x${VARNISHSRC}" != "x" ],[
+        AC_MSG_RESULT([$VARNISHSRC])
+
+        AX_CHECK_VARNISHSRC([
+            AC_SUBST([VARNISH_CFLAGS],["-I${VARNISHSRC}/include -I${VARNISHSRC}/bin/varnishd -I${VARNISHSRC}"])
+            old_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+            export PKG_CONFIG_PATH="${VARNISHSRC}"
+            # TODO: AX_SET_VARNISH_BUILD_FLAGS()
+            AX_CHECK_VARNISH_VMOD_REQ([$1],[$2])
+            export PKG_CONFIG_PATH="${old_PKG_CONFIG_PATH}"
+        ],[$2])
+    ],[
+        AC_MSG_RESULT([no])
+        PKG_CHECK_MODULES([VARNISH],[varnishapi],[
+            AX_CHECK_VARNISH_VMOD_REQ([$1],[$2])
+        ],[$2])
+    ])
 ])
 
 ## EOF

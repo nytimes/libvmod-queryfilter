@@ -15,7 +15,7 @@ varnish v1 -vcl+backend {
 
 	sub vcl_hash {
 		std.syslog(180, "queryfilter before: " + req.url);
-		set req.url = queryfilter.filterparams(req.url, "a,id");
+		set req.url = queryfilter.filterparams(req.url, "a,id", false);
 		std.syslog(180, "queryfilter after: " + req.url);
 	}
 } -start

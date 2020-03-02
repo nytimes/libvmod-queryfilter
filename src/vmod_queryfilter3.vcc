@@ -1,2 +1,2 @@
 Module queryfilter 
-Function STRING filterparams(STRING, STRING)
+Function STRING filterparams(STRING, STRING, BOOL)

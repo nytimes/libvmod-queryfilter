@@ -5,15 +5,14 @@
 #=============================================================================
 
 AM_CPPFLAGS = \
-    -I@VARNISHSRC@/include \
-    -I@VARNISHSRC@/bin/varnishd \
-    -I@VARNISHSRC@ \
+    @VARNISH_CFLAGS@ \
     -I@top_builddir@/include
 
-vmoddir = @VMOD_DIR@
+vmoddir = @VARNISH_VMODDIR@
 vmod_LTLIBRARIES = libvmod_queryfilter.la
 
 libvmod_queryfilter_la_LDFLAGS = \
+    @VARNISH_LIBS@ \
     -module \
     -export-dynamic \
     -avoid-version \
@@ -36,9 +35,10 @@ VMOD_TESTS = @abs_srcdir@/tests/*.vtc
 .PHONY: $(VMOD_TESTS)
 
 @abs_srcdir@/tests/*.vtc:
-	PATH="@VARNISHSRC@/bin/varnishd:${PATH}" @VARNISHTEST@ \
+	PATH="@VARNISHD_PATH@:@VARNISHTEST_PATH@:${PATH}" \
+	@VARNISHTEST@ \
         -Dvarnish_source=@VARNISHSRC@ \
-        -Dvarnishd=@VARNISHSRC@/bin/varnishd/varnishd \
+        -Dvarnishd=@VARNISHD@  \
         -Dvmod_topbuild=@abs_top_builddir@ $@
 
 check: $(VMOD_TESTS)

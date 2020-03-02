@@ -39,8 +39,15 @@ AC_DEFUN([AX_PROG_VARNISHTEST],[
     AC_ARG_VAR([VARNISHTEST],[path to varnishtest (optional)])
 
     # Check that varnishtest is built and in the varnish source directory:
-    AC_PATH_PROG([VARNISHTEST],[varnishtest],[],
-        [$PATH:$VARNISHSRC/bin/varnishtest])
+    AS_IF([test "x$VARNISHSRC" != "x"],[
+        _varnishtest_basepath="$VARNISHSRC/bin/varnishtest"
+    ],[
+        PKG_CHECK_VAR([VARNISH_BINDIR],[varnishapi],[bindir],[
+            _varnishtest_basepath="$VARNISH_BINDIR"
+            ],[$2])
+    ])
+    AC_PATH_PROG([VARNISHTEST],[varnishtest],[],[$_varnishtest_basepath])
+    AC_SUBST([VARNISHTEST_PATH],[$_varnishtest_basepath])
     AS_IF([test "x$VARNISHTEST" != "x"],[$1],[$2])
 ])
 
