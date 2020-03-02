@@ -1,3 +1,17 @@
+v1.0.0 2020/03/02
+-----------------
+
+### Features
+ - Build against pre-installed dev packages or source for varnish 3 through 6
+ - Make query param arrays runtime configurable.
+ - Updated documentation
+
+### Miscellaneous
+ - Move check for empty query string up
+ - Remove superfluous var checks/initialization
+ - Fix PATH for test run
+ - Remove `flag` and `next` from `query_param_t`
+
 v0.2.3 2018/01/15
 -----------------
  - _NOTICE file added to track contributors!_
