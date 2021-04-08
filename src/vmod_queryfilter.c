@@ -196,7 +196,11 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
      * almost all of it in the end ;) */
+#if defined(HAVE_DECL_WS_RESERVEALL) && (HAVE_DECL_WS_RESERVEALL==1)
+    ws_remain = WS_ReserveAll(workspace);
+#else
     ws_remain = WS_Reserve(workspace, 0);
+#endif /* defined(HAVE_DECL_WS_RESERVEALL) && (HAVE_DECL_WS_RESERVEALL==1) */
     ws_free = workspace->f;
 
     /* Duplicate the URI, bailing on OOM: */

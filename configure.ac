@@ -44,7 +44,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 
 # Check for rst utilities
 AC_ARG_VAR([MD2MAN],
@@ -77,11 +76,6 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 
 #-----------------------------
-#       Function Checks:
-#-----------------------------
-AC_CHECK_FUNCS([strchr])
-
-#-----------------------------
 #           Varnish:
 #-----------------------------
 AX_CHECK_VARNISH_VMOD_DEV([
@@ -98,6 +92,12 @@ AC_DEFINE_UNQUOTED(
 AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
 AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
 AM_CONDITIONAL([VARNISHSRC_5_X],[test "x$VARNISH_API_MAJOR" = "x5"])
+
+# Save CFLAGS, check for new varnish functions, then restore flags:
+SAVED_CFLAGS="$CFLAGS"
+CFLAGS="${CFLAGS} ${VARNISH_CFLAGS}"
+AC_CHECK_DECLS([WS_ReserveAll], [], [], [[#include "cache/cache.h"]])
+CFLAGS="$SAVED_CFLAGS"
 
 
 #-----------------------------
