@@ -18,6 +18,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
 AC_LANG(C)
 AM_INIT_AUTOMAKE([foreign])
+LT_INIT
 
 #-----------------------------
 #         Metadata:
