@@ -16,9 +16,7 @@ AC_INIT([libvmod-queryfilter], [1.0.0],
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(src/vmod_queryfilter.vcc)
-AC_CANONICAL_SYSTEM
 AC_LANG(C)
-AC_GNU_SOURCE
 AM_INIT_AUTOMAKE([foreign])
 
 #-----------------------------
@@ -36,13 +34,8 @@ AC_SUBST([PACKAGE_SUMMARY],["Simple Varnish query filter/sort VMOD"])
 #         Programs:
 #-----------------------------
 AC_PROG_CC
-AC_PROG_CC_C99
-AS_IF([test "x$ac_cv_prog_cc_c99" = "xno"],[
-	AC_MSG_ERROR([Could not find a C99 compatible compiler])
-])
 AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 AC_PROG_CC
@@ -74,7 +67,6 @@ AC_CHECK_PROGS([PYTHON],
 #           Headers:
 #-----------------------------
 AC_CHECK_HEADERS([stdlib.h string.h])
-AC_HEADER_STDC
 AC_CHECK_HEADERS([sys/stdlib.h])
 
 #-----------------------------
