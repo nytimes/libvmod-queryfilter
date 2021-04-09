@@ -257,14 +257,6 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
             if(current->value) {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     sep, current->name, current->value);
-/* If arrays are not enabled (default), we just break after the first match
- * to avoid unnecessary checks. However, for arrays it is necessary to keep
- * iterating through the list to find additional matches. A side effect of this
- * is that all elements of a given array will be rewritten in sequence next to
- * each other in the output array: */
-                if( !arrays_enabled ) {
-                    break;
-                }
             } else {
                 /* Empty params have been excluded, so this
                  * is a flag-style query param: */
@@ -274,6 +266,16 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
 
             /* After the first param, swap the separator: */
             sep = '&';
+
+            /* If arrays are not enabled (default), we just break after the
+             * first match to avoid unnecessary checks. However, for arrays it
+             * is necessary to keep iterating through the list to find
+             * additional matches. A side effect of this is that all elements of
+             * a given array will be rewritten in sequence next to each other in
+             * the output array: */
+            if( !arrays_enabled ) {
+                break;
+            }
         };
     };
 
