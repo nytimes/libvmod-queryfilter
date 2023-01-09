@@ -10,7 +10,7 @@
 #-----------------------------
 AC_PREREQ(2.59)
 AC_COPYRIGHT([Copyright 2014-2020 The New York Times Company])
-AC_INIT([libvmod-queryfilter], [1.0.0],
+AC_INIT([libvmod-queryfilter], [1.0.1],
         [code@nytimes.com],[libvmod-queryfilter],
         [https://github.com/NYTimes/libvmod-queryfilter])
 AC_CONFIG_AUX_DIR([.])
@@ -66,7 +66,7 @@ PKG_PROG_PKG_CONFIG
 
 # Check for python
 AC_CHECK_PROGS([PYTHON],
-	[python3 python3.1 python3.2 python2.7 python2.6 python2.5 python2 python],
+	[python, python3 python2],
 	[AC_MSG_ERROR([Python is needed to build this vmod. Please install python.])
 	])
 
@@ -102,9 +102,12 @@ AC_DEFINE_UNQUOTED(
     [$VARNISH_API_MAJOR],
     [Varnish API major version])
 
+AC_DEFINE_UNQUOTED(
+    [VARNISH_API_MINOR],
+    [$VARNISH_API_MINOR],
+    [Varnish API minor version])
+
 AM_CONDITIONAL([VARNISHSRC_3_X],[test "x$VARNISH_API_MAJOR" = "x3"])
-AM_CONDITIONAL([VARNISHSRC_4_X],[test "x$VARNISH_API_MAJOR" = "x4"])
-AM_CONDITIONAL([VARNISHSRC_5_X],[test "x$VARNISH_API_MAJOR" = "x5"])
 
 
 #-----------------------------

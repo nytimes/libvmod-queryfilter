@@ -1,3 +1,14 @@
+v1.0.1 2022/0109:
+-----------------
+
+### Updates to fix issue #6:
+
+ - Add support for Varnish 7.x
+ - Add some docker-based test utilities (this is a pre-CI HACK)
+ - Add tests to check flag-style parameters with arrays disabled.
+ - Add additional tests to verify logic for parameters with no values.
+ - Fix issue#6
+
 v1.0.0 2020/03/02
 -----------------
 

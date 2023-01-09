@@ -45,7 +45,9 @@ AC_DEFUN([AX_CHECK_VARNISH_VERSION],[
         AS_IF([test "x$_varnish_version" != "x"],[
             AC_MSG_RESULT([$_varnish_version])
             AC_SUBST([VARNISH_VERSION],[$_varnish_version])
-            AC_SUBST([VARNISH_API_MAJOR],[${_varnish_version%%.*}])
+            _varnish_api_mm=[${_varnish_version%.*}]
+            AC_SUBST([VARNISH_API_MAJOR],[${_varnish_api_mm%%.*}])
+            AC_SUBST([VARNISH_API_MINOR],[${_varnish_api_mm##*.}])
 
             # TODO: Varnish v3.x doesn't make vmod tool available as part of the
             # install. Warn the user here, or see if the vars are set first?
@@ -58,7 +60,9 @@ AC_DEFUN([AX_CHECK_VARNISH_VERSION],[
         _varnish_version="$VARNISH_VERSION"
         AC_MSG_RESULT([$_varnish_version])
         AC_SUBST([VARNISH_VERSION],[$_varnish_version])
-        AC_SUBST([VARNISH_API_MAJOR],[${_varnish_version%%.*}])
+        _varnish_api_mm=[${_varnish_version%.*}]
+        AC_SUBST([VARNISH_API_MAJOR],[${_varnish_api_mm%%.*}])
+        AC_SUBST([VARNISH_API_MINOR],[${_varnish_api_mm##*.}])
         $1
     ])
 ])
