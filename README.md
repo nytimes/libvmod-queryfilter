@@ -1,3 +1,5 @@
+# :information_source: the default branch has been moved to `main`
+
 libvmod-queryfilter
 ===================
 
