@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 /*--- Varnish 3.x: ---*/
 #if VARNISH_API_MAJOR == 3
@@ -41,17 +42,21 @@ typedef const struct vrt_ctx req_ctx;
 #endif /* (VARNISH_API_MAJOR == 4 || VARNISH_API_MAJOR == 5 ) */
 
 /*--- Varnish 6.x ---*/
-#if VARNISH_API_MAJOR == 6
+#if (VARNISH_API_MAJOR == 6 || VARNISH_API_MAJOR == 7)
 #include "cache/cache.h"
 #include "vcl.h"
 #include "vre.h"
 #include "vas.h"
 #include "vsb.h"
-//#include "vdef.h"
-//#include "vrt.h"
 #include "vcc_if.h"
 typedef const struct vrt_ctx req_ctx;
 #endif /* VARNISH_API_MAJOR == 6 */
+
+/* WS_Reserve was deprecated in Varnish 6.3.0: */
+#if (VARNISH_API_MAJOR < 6) || (VARNISH_API_MAJOR == 6 && VARNISH_API_MINOR < 3)
+#define WS_ReserveAll(ws) \
+    WS_Reserve(ws, 0)
+#endif /* Varnish Version >= 6.3 */
 
 
 /** Alignment macros ala varnish internals: */
@@ -112,10 +117,13 @@ tokenize_querystring(query_param_t** result, char** ws_free, unsigned* remain, c
         param->value = strchr(param_str,'=');
         if( param->value ) {
             *(param->value++) = '\0';
-            if( *(param->value) == '\0' ) {
-                /* If there is no value, omit the param by jumping
-                 * to the next item without committing our allocation: */
-                continue;
+
+            /* If the actual value is the end of the string
+             * or the beginning of another parameter, set the
+             * parameter to NULL.
+             */
+            if( *(param->value) == '\0' || *(param->value) == '&') {
+                param->value = NULL;
             };
         };
 
@@ -196,7 +204,7 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
 
     /* Reserve the *rest* of the workspace - it's okay, we're gonna release
      * almost all of it in the end ;) */
-    ws_remain = WS_Reserve(workspace, 0);
+    ws_remain = WS_ReserveAll(workspace);
     ws_free = workspace->f;
 
     /* Duplicate the URI, bailing on OOM: */
@@ -250,17 +258,9 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
                 continue;
             };
 
-            if(current->value) {
+            if(current->value && (*current->value) != '\0') {
                 new_uri_end += sprintf(new_uri_end, "%c%s=%s",
                     sep, current->name, current->value);
-/* If arrays are not enabled (default), we just break after the first match
- * to avoid unnecessary checks. However, for arrays it is necessary to keep
- * iterating through the list to find additional matches. A side effect of this
- * is that all elements of a given array will be rewritten in sequence next to
- * each other in the output array: */
-                if( !arrays_enabled ) {
-                    break;
-                }
             } else {
                 /* Empty params have been excluded, so this
                  * is a flag-style query param: */
@@ -270,6 +270,16 @@ vmod_filterparams(req_ctx* sp, const char* uri, const char* params_in, unsigned 
 
             /* After the first param, swap the separator: */
             sep = '&';
+
+            /* If arrays are not enabled (default), we just break after the
+             * first match to avoid unnecessary checks. However, for arrays it
+             * is necessary to keep iterating through the list to find
+             * additional matches. A side effect of this is that all elements of
+             * a given array will be rewritten in sequence next to each other in
+             * the output array: */
+            if( !arrays_enabled ) {
+                break;
+            }
         };
     };
 

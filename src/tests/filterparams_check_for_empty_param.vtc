@@ -28,6 +28,10 @@ client c1 {
 	txreq -url "/some_path?a=1&id="
 	rxresp
 	expect resp.status == 200
+
+	txreq -url "/some_path?a=1&id"
+	rxresp
+	expect resp.status == 200
 }
 
 varnish v1 -expect n_object == 0
@@ -39,4 +43,4 @@ delay .1
 
 varnish v1 -expect n_object == 1
 varnish v1 -expect cache_miss == 1
-varnish v1 -expect cache_hit == 2
+varnish v1 -expect cache_hit == 3
